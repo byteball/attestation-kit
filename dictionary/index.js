@@ -19,7 +19,7 @@ const locales = {
 
 const setLocale = (provider) => {
     if (Validation.isServiceProvider(provider)) {
-        locales[provider] = require(__dirname + '../dictionary/' + provider + '.local');
+        locales[provider] = require(process.cwd() + './dictionary/' + provider + '.local');
     } else {
         throw new Error('Invalid service provider');
     }
