@@ -12,6 +12,7 @@ const dictionary = require('../../dictionary');
 const postAttestationProfile = require('../utils/postAttestationProfile');
 const logger = require('../utils/logger');
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
+const { isEqual } = require('lodash');
 
 module.exports = async (from_address, data) => {
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
@@ -59,11 +60,7 @@ module.exports = async (from_address, data) => {
                             return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(provider, walletAddress, { username, userId: id }));
                         }
 
-                        const object = transformDataValuesToObject(order);
-
-                        logger.error('data', data, object);
-                       
-                        if (username === order.username && provider === order.service_provider) {
+                        if (isEqual(transformDataValuesToObject(order), data) && provider === order.service_provider) {
 
                             device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
 
