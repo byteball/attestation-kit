@@ -16,7 +16,7 @@ const locales = {
 }
 
 const setLocale = (provider, path) => {
-    locales[provider] = require(__dirname + path);
+    locales[provider] = require(__dirname + '../');
 }
 
 module.exports = {
