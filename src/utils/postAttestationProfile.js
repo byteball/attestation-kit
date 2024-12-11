@@ -9,13 +9,14 @@ const { ErrorWithMessage } = require('./ErrorWithMessage');
  * @param {string} provider - The name of the service provider.
  * @param {string} userAddress - The user's wallet address.
  * @param {object} profile - The data to attest (maximum 4 key-value pairs).
+ * @throws {ErrorWithMessage} Throws an error if any validation fails. (INVALID_SERVICE_PROVIDER, INVALID_ADDRESS, INVALID_DATA, INVALID_ATTESTOR)
  * @returns {Promise<string>} Resolves with the unit ID of the posted attestation.
  */
 async function postAttestationProfile(provider, userAddress, profile) {
     const attestorAddress = await headlessWallet.readFirstAddress();
 
     if (!provider || !Validation.isServiceProvider(provider)) {
-       throw new ErrorWithMessage('Invalid service provider', { code: "INVALID_SERVICE_PROVIDER" });
+        throw new ErrorWithMessage('Invalid service provider', { code: "INVALID_SERVICE_PROVIDER" });
     }
 
     if (!Validation.isWalletAddress(userAddress)) {
@@ -30,11 +31,9 @@ async function postAttestationProfile(provider, userAddress, profile) {
         throw new ErrorWithMessage('Invalid data object', { code: "INVALID_DATA" });
     }
 
-    return new Promise((resolve, reject) => {
-        if (!attestorAddress) {
-            return reject('Attestor address not available');
-        }
+    if (!attestorAddress) throw new ErrorWithMessage('Attestor address not available', { code: "INVALID_ATTESTOR" })
 
+    return new Promise((resolve, reject) => {
         function onError(err) {
             logger.error('(postAttestationProfile): ' + err);
             logger.error('(postAttestationProfile) userAddress: ' + userAddress);
