@@ -11,14 +11,22 @@ const DbService = require('../db/DbService');
 eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
     logger.error('data', data);
-    
+
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 2) {
         const [provider, address, user_id, encodedUsername] = data.split('-');
         const username = decodeURIComponent(encodedUsername);
 
-        const order = await DbService.getAttestationOrders({ serviceProvider: provider, userId: user_id, username, address });
+        let order;
 
-        if (!order) {
+        try {
+            order = await DbService.getAttestationOrders({ serviceProvider: provider, userId: user_id, username, address });
+
+            if (!order) {
+                unlock(dictionary.common.CANNOT_FIND_ORDER);
+                return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
+            }
+        } catch (error) {
+            logger.error('Database query failed:', error);
             unlock(dictionary.common.CANNOT_FIND_ORDER);
             return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
         }
