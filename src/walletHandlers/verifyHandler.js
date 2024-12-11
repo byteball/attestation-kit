@@ -4,6 +4,7 @@
  */
 
 const device = require('ocore/device');
+const eventBus = require('ocore/event_bus.js');
 
 const DbService = require('../db/DbService');
 const dictionary = require('../../dictionary');
@@ -46,40 +47,29 @@ module.exports = async (from_address, data) => {
         try {
             const signedData = JSON.parse(signed_message);
 
-            const { username, provider, userId, address } = signedData;
+            const { address, provider, ...data } = signedData;
 
             if (walletAddress || !address) {
                 if (walletAddress === address) {
-                    const order = await DbService.getAttestationOrders({ serviceProvider: provider, data: { userId: id, username }, address });
+                    const order = await DbService.getAttestationOrders({ serviceProvider: provider, data, address });
 
                     if (order) {
                         if (order.status === 'attested') {
                             return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(provider, walletAddress, { username, userId: id }));
                         }
 
-                        // TODO: FIX it
+                        logger.error('data', data);
+                        
                         if (username === order.username && provider === order.service_provider) {
 
                             device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
 
                             try {
-                                const profile = {
-                                    username: order.username,
-                                    user_id: order.user_id,
-                                    provider: order.service_provider,
-                                }
+                                const unit = await postAttestationProfile(order.service_provider, address, data);
 
-                                const unit = await postAttestationProfile(profile, address);
+                                await DbService.updateUnitAndChangeStatus(provider, data, address, unit);
 
-                                await DbService.updateUnitAndChangeStatus(provider, { userId, username }, address, unit);
-
-                                // try {
-                                //     if (provider === 'telegram') {
-                                //         TelegramMessageEmitter.emit("sendMessage", { userId: id, message: `Attestation unit: <a href="https://${conf.testnet ? 'testnet' : ''}explorer.obyte.org/${encodeURIComponent(unit)}">${unit}</a>` });
-                                //     }
-                                // } catch (err) {
-                                //     logger.error('Cannot send message to user via Telegram:', err);
-                                // }
+                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider, address, unit, data });
 
                                 return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
 
