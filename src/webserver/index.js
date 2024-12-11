@@ -15,10 +15,7 @@ fastifyInstance.register(CORS);
 fastifyInstance.register(fastifySensible);
 
 // Register routes
-// fastifyInstance.get('/verify/:service_provider/:address/:user_id/:username', verifyUrlController);
 fastifyInstance.setNotFoundHandler(notFoundController);
 
 // Run the server
-module.exports = {
-    fastifyInstance
-};
+module.exports = fastifyInstance;
