@@ -4,7 +4,12 @@ module.exports = (dbData) => { // { dataKey0, dataKey1, dataKey2, dataKey3, data
     for (let i = 0; dbData[`dataKey${i}`] !== undefined; i++) {
         const key = dbData[`dataKey${i}`];
         const value = dbData[`dataValue${i}`];
-        result[key] = value;
+        if (key && value) {
+            result[key] = value;
+        } else {
+            break;
+        }
+        
     }
 
     return result;
