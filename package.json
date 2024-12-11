@@ -1,7 +1,7 @@
 {
   "name": "attestation-kit",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -9,11 +9,12 @@
     "obyte",
     "attestation",
     "attestation-kit",
-    "attestation bot"
+    "attestation bot",
+    "DAG"
   ],
   "author": "",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
+  "description": "Attestation Kit for Obyte",
   "dependencies": {
     "aabot": "^0.1.5",
     "cli-color": "^2.0.4",
