@@ -10,7 +10,7 @@
  * console.log(common.INVALID_ADDRESS);
  */
 
-const Validation = require('../src/utils/Validation');
+const { Validation, logger, ErrorWithMessage } = require('../src/utils');
 const fs = require('fs');
 
 const locales = {
@@ -23,9 +23,10 @@ const setLocale = (provider) => {
         const filename = provider + '.local';
         const path = process.cwd() + '/dictionary/' + filename;
 
-        if (!fs.existsSync(path)) throw new Error(`${filename} file is not in the dictionary folder`);
+        if (!fs.existsSync(path)) throw new ErrorWithMessage(`${filename} file is not in the dictionary folder`, { code: "FILE_NOT_FOUND" });
 
         locales[provider] = require(path);
+        logger.info(`Locale set to ${provider}`);
     } else {
         throw new Error('Invalid service provider');
     }
