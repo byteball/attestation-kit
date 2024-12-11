@@ -6,7 +6,7 @@
 const device = require('ocore/device');
 
 const DbService = require('../db/DbService');
-const dictionary = require('../dictionary');
+const dictionary = require('../../dictionary');
 
 const postAttestationProfile = require('../utils/postAttestationProfile');
 const logger = require('../utils/logger');
