@@ -30,7 +30,7 @@ class DbService {
             return insertId;
 
         } else if (!allowDuplicates) {
-            throw new ErrorWithMessage('Order already exists', { code: 'ALREADY_EXISTS', status: order.status, username, user_id: userId, user_address: order.user_wallet_address, unit: order.unit });
+            throw new ErrorWithMessage('Order already exists', { code: 'ALREADY_EXISTS', status: order.status, ...data, unit: order.unit });
         } else {
             return order.id
         }
