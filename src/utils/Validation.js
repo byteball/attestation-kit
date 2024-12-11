@@ -37,7 +37,7 @@ class Validation {
         return true;
     }
 
-    isDataObject(data) {
+    static isDataObject(data) {
         if (!data || typeof data !== 'object') {
             return false;
         }
