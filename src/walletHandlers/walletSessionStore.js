@@ -38,7 +38,7 @@ class SessionStore {
     }
 
     deleteSession(deviceAddress) {
-        delete this.sessions[deviceAddress];
+        this.sessions.delete(deviceAddress);
     }
 }
 
