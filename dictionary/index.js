@@ -10,13 +10,19 @@
  * console.log(common.INVALID_ADDRESS);
  */
 
+const Validation = require('../src/utils/Validation');
+
 const locales = {
     wallet: require('./wallet.local'),
     common: require('./common.local'),
 }
 
-const setLocale = (provider, path) => {
-    locales[provider] = require(__dirname + '../');
+const setLocale = (provider) => {
+    if (Validation.isServiceProvider(provider)) {
+        locales[provider] = require(__dirname + '../dictionary/' + provider + '.local');
+    } else {
+        throw new Error('Invalid service provider');
+    }
 }
 
 module.exports = {
