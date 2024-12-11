@@ -18,22 +18,32 @@ const locales = {
     wallet: require('./wallet.local'),
     common: require('./common.local'),
 }
+const dictionary = new Proxy(locales, {
+    get(target, prop) {
+        if (prop === 'set') {
+            return (provider) => {
+                if (!Validation.isServiceProvider(provider)) {
+                    throw new Error(`Invalid service provider name: "${provider}"`);
+                }
+                
+                const filename = provider + '.local.js';
+                const path = process.cwd() + '/dictionary/' + filename;
 
-const setLocale = (provider) => {
-    if (Validation.isServiceProvider(provider)) {
-        const filename = provider + '.local.js';
-        const path = process.cwd() + '/dictionary/' + filename;
+                if (!fs.existsSync(path)) {
+                    throw new ErrorWithMessage(`${filename} file is not in the dictionary folder`, { code: "FILE_NOT_FOUND" });
+                }
 
-        if (!fs.existsSync(path)) throw new ErrorWithMessage(`${filename} file is not in the dictionary folder`, { code: "FILE_NOT_FOUND" });
+                target[provider] = require(path);
+                logger.info(`Locale "${provider}" has been added.`);
+            };
+        }
 
-        locales[provider] = require(path);
-        logger.info(`Locale set to ${provider}`);
-    } else {
-        throw new Error('Invalid service provider');
+        if (prop in target) {
+            return target[prop];
+        }
+
+        throw new Error(`Locale "${String(prop)}" is not available`);
     }
-}
+});
 
-module.exports = {
-    ...locales,
-    setLocale
-}
+module.exports = dictionary;
