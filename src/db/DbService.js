@@ -45,7 +45,7 @@ class DbService {
      */
     static async removeWalletAddressInAttestationOrder(serviceProvider, data, address) {
         if (!Validation.isServiceProvider(serviceProvider)) throw new ErrorWithMessage('Invalid service provider', { code: 'INVALID_DATA' });
-        if (!Validation.isDataObject(data)) return new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
+        if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         const order = await DbService.getAttestationOrders({ serviceProvider, data, address, excludeAttested: true });
 
@@ -143,7 +143,7 @@ class DbService {
 
         if (address && !Validation.isWalletAddress(address)) throw new ErrorWithMessage('Invalid wallet address', { code: "INVALID_DATA" });
 
-        if (!Validation.isDataObject(data)) return new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
+        if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         // Building the query dynamically based on filters
         let query = 'SELECT * FROM ATTESTATION_KIT_attestations WHERE service_provider = ?';
