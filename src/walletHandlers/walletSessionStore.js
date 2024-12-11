@@ -14,7 +14,7 @@ class SessionStore {
 
     createSession(deviceAddress, provider) {
         const session = this.sessions.get(deviceAddress);
-        
+
         if (this.sessions.has(deviceAddress)) {
             return session;
         } else {
@@ -22,7 +22,7 @@ class SessionStore {
                 ["provider", value],
                 ["ts", new Date().getTime()],
             ]);
-    
+
 
             return this.sessions.set(deviceAddress, value);
         }
@@ -42,4 +42,13 @@ class SessionStore {
     }
 }
 
-module.exports = new SessionStore();
+const sessionStore = new SessionStore();
+
+// Run cleanup every hour
+setInterval(() => {
+    // sessionStore.cleanup();
+    // TODO: Implement cleanup
+}, 60 * 60 * 1000);
+
+
+module.exports = sessionStore;
