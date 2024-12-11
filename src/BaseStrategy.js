@@ -66,8 +66,8 @@ class BaseStrategy {
      */
     getVerifyUrl(address, serviceProvider, data) {
         if (Validation.isWalletAddress(address) && Validation.isServiceProvider(serviceProvider) && Validation.isDataObject(data)) {
-            // TODO: fix it and add webserver
-            return `${process.env.domain}/verify/${serviceProvider}/${address}/${String(userId)}/${encodeURIComponent(String(username).toLowerCase())}`;
+            const sanitizedDataObject = new URLSearchParams(data).toString();
+            return `${process.env.domain}/verify/${serviceProvider}/${address}/${sanitizedDataObject}`;
         } else {
             throw new ErrorWithMessage('Invalid Data', { address, serviceProvider, address, userId, code: 'INVALID_DATA' });
         }
