@@ -46,7 +46,7 @@ module.exports = async (from_address, data) => {
         try {
             const signedData = JSON.parse(signed_message);
 
-            const { username, provider, id, address } = signedData;
+            const { username, provider, userId, address } = signedData;
 
             if (walletAddress || !address) {
                 if (walletAddress === address) {
