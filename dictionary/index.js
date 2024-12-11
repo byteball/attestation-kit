@@ -11,6 +11,7 @@
  */
 
 const Validation = require('../src/utils/Validation');
+const fs = require('fs');
 
 const locales = {
     wallet: require('./wallet.local'),
@@ -19,7 +20,12 @@ const locales = {
 
 const setLocale = (provider) => {
     if (Validation.isServiceProvider(provider)) {
-        locales[provider] = require(process.cwd() + '/dictionary/' + provider + '.local');
+        const filename = provider + '.local';
+        const path = process.cwd() + '/dictionary/' + filename;
+
+        if (!fs.existsSync(path)) throw new Error(`${filename} file is not in the dictionary folder`);
+
+        locales[provider] = require(path);
     } else {
         throw new Error('Invalid service provider');
     }
