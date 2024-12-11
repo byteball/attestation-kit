@@ -1,0 +1,23 @@
+{
+  "name": "attestation-kit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "obyte",
+    "attestation",
+    "attestation-kit",
+    "attestation bot"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "aabot": "^0.1.5",
+    "cli-color": "^2.0.4",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1"
+  }
+}
