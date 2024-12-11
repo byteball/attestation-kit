@@ -3,13 +3,13 @@ const device = require('ocore/device');
 const mutex = require('ocore/mutex.js');
 
 const logger = require('../utils/logger');
+const Validation = require('../utils/Validation');
 
 const dictionary = require('../../dictionary');
 const DbService = require('../db/DbService');
 
 eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
-    logger.error('data', data);
 
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 2) {
         const [provider, address, dataString] = data.split('-');
