@@ -9,9 +9,10 @@
  * console.log(wallet.SIGN_MESSAGE_PROMPT);
  * console.log(common.INVALID_ADDRESS);
  */
-
-const { Validation, logger, ErrorWithMessage } = require('../src/utils');
 const fs = require('fs');
+
+const { Validation, logger } = require('../src/utils');
+const { ErrorWithMessage } = require('../src/utils/ErrorWithMessage');
 
 const locales = {
     wallet: require('./wallet.local'),
