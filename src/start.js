@@ -7,12 +7,18 @@ module.exports = async (func = () => { }) => {
         throw new TypeError('Argument must be a function');
     }
 
-    require('./walletHandlers')(async () => {
-        logger.info('Starting obyte attestation service...');
-
-        await dbService.initialize();
-
-        return await func();
+    return new Promise((resolve, reject) => {
+        require('./walletHandlers')(async () => {
+            try {
+                logger.info('Starting obyte attestation service...');
+                await dbService.initialize();
+                const result = await func();
+                resolve(result);
+            } catch (error) {
+                logger.error('Service initialization failed:', error);
+                reject(error);
+            }
+        });
     });
 }
 
