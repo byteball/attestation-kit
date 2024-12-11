@@ -31,7 +31,7 @@ module.exports = (service_provider, address, data) => {
         const sanitizedProvider = encodeURIComponent(service_provider);
         const sanitizedAddress = encodeURIComponent(address);
 
-        const sanitizedDataObject = new URLSearchParams(data).toString();;
+        const sanitizedDataObject = new URLSearchParams(data).toString();
 
         return `obyte${conf.testnet ? '-tn' : ''}:${publicKey}@${conf.hub}#${sanitizedProvider}-${sanitizedAddress}-${sanitizedDataObject}`;
     } else {
