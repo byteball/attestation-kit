@@ -8,8 +8,11 @@ const Validation = require('./Validation');
  * Generates a pairing URL with verification data for the user.
  * @param {string} service_provider - The name of the service provider.
  * @param {string} address - The user's wallet address.
- * @param {string} data - The user's data to be verified. (e.g. username, user_id, etc.)
+ * @param {Object} data - Key-value pairs of user data to be verified (e.g. {username: "john", user_id: "123"})
  * @returns {string} The pairing URL in format: obyte[-tn]:<pubkey>@<hub>#<provider>-<address>-<userid>-<username>
+ * @example
+ * generateParingUrlWithVerifyData("github", "ADDR123", {username: "john"})
+ * // returns: obyte:PUBKEY@hub#github-ADDR123-username=john
  * @throws {ErrorWithMessage} Throws an error if any validation fails.
  */
 
