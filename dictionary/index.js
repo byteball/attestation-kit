@@ -21,7 +21,7 @@ const locales = {
 
 const setLocale = (provider) => {
     if (Validation.isServiceProvider(provider)) {
-        const filename = provider + '.local';
+        const filename = provider + '.local.js';
         const path = process.cwd() + '/dictionary/' + filename;
 
         if (!fs.existsSync(path)) throw new ErrorWithMessage(`${filename} file is not in the dictionary folder`, { code: "FILE_NOT_FOUND" });
