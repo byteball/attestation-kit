@@ -36,7 +36,7 @@ class BaseStrategy {
     }
 
     /**
-     * Returns the instruction to ask the user follow instructions. This method must be implemented by all derived classes.
+     *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
      * @abstract
      * @throws {ErrorWithMessage} When called directly on BaseStrategy
      * @returns {void}
@@ -64,8 +64,9 @@ class BaseStrategy {
      * @returns {string} The verification URL.
      * @throws {ErrorWithMessage} Throws an error if the address or service provider is invalid.
      */
-    getVerifyUrl(address, serviceProvider, userId, username) {
-        if (Validation.isWalletAddress(address) && Validation.isServiceProvider(serviceProvider) && Validation.isUserId(userId, serviceProvider) && Validation.isUserName(username)) {
+    getVerifyUrl(address, serviceProvider, data) {
+        if (Validation.isWalletAddress(address) && Validation.isServiceProvider(serviceProvider) && Validation.isDataObject(data)) {
+            // TODO: fix it and add webserver
             return `${process.env.domain}/verify/${serviceProvider}/${address}/${String(userId)}/${encodeURIComponent(String(username).toLowerCase())}`;
         } else {
             throw new ErrorWithMessage('Invalid Data', { address, serviceProvider, address, userId, code: 'INVALID_DATA' });
