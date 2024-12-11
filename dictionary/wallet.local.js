@@ -1,5 +1,5 @@
 module.exports = {
-    PAIRING_WELCOME: `Welcome to the Obyte Attestation Service (OAS) bot. This service helps verify your wallet ownership.`, // Please follow the instructions to complete the attestation process.a
+    PAIRING_WELCOME: `Welcome to the Obyte Attestation Service (OAS) bot. This service helps verify your wallet ownership.`,
     ASK_VERIFY_FN: (address, data) => `Please sign this message to prove that you own the address and ${data.provider} data: [${address}](sign-message-request:${JSON.stringify({ ...data, address })})`,
     INVALID_FORMAT_SIGNED_MESSAGE: 'The signed message format is invalid. Please check and try again.',
     VALIDATION_FAILED: 'Validation failed. Please try again.',
