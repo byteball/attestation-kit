@@ -17,7 +17,7 @@ class DbService {
      * @throws {ErrorWithMessage} Throws an error if validation fails or if the order already exists.
      */
     static async createAttestationOrder(serviceProvider, data, allowDuplicates = true) {
-        if (!Validation.isDataObject(data)) return new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
+        if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         const order = await DbService.getAttestationOrders({ serviceProvider, data, excludeAttested: allowDuplicates });
 
