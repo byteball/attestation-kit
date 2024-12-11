@@ -3,4 +3,5 @@ module.exports = {
     utils: require("./utils"),
     dictionary: require("../dictionary"),
     BaseStrategy: require("./BaseStrategy"),
+    webserver: require("./webserver"),
 }
