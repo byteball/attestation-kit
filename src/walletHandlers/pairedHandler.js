@@ -53,6 +53,6 @@ eventBus.on('paired', async (from_address, data) => {
     } else {
         unlock(dictionary.common.INVALID_DATA_FORMAT);
         logger.error('Invalid data format received on pairing:', data);
-        return device.sendMessageToDevice(from_address, 'text', "Invalid data format");
+        return device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
     }
 });
