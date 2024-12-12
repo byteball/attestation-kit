@@ -61,7 +61,7 @@ eventBus.on('paired', async (from_address, data) => {
                 eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
             }
         });
-    };
 
-    unlock();
+        unlock();
+    };
 });
