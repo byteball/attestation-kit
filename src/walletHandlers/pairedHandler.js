@@ -8,6 +8,8 @@ const Validation = require('../utils/Validation');
 const dictionary = require('../../dictionary');
 const DbService = require('../db/DbService');
 
+const walletSessionStore = require('./walletSessionStore');
+
 eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
 
@@ -51,8 +53,15 @@ eventBus.on('paired', async (from_address, data) => {
         device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, { provider, ...dataObject }));
         unlock();
     } else {
-        unlock(dictionary.common.INVALID_DATA_FORMAT);
-        logger.error('Invalid data format received on pairing:', data);
-        return device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
-    }
+        walletSessionStore.createSession(from_address);
+
+        device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME, {
+            ifOk: () => {
+                device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_ADDRESS);
+                eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
+            }
+        });
+
+        unlock();
+    };
 });

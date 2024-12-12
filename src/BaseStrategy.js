@@ -1,4 +1,6 @@
 const escape = require('lodash/escape');
+const eventBus = require('ocore/event_bus.js');
+const device = require('ocore/device');
 
 const { ErrorWithMessage } = require('../src/utils/ErrorWithMessage');
 const { logger, Validation } = require('../src/utils');
@@ -33,17 +35,39 @@ class BaseStrategy {
         this.db = DbService;
         this.logger = logger;
         this.init();
+
+        eventBus.on('ATTESTATION_KIT_JUST_PAIRED', async (from_address, data) => {
+            if (this.onPaired) {
+                this.onPaired(from_address, data);
+            }
+        });
+
+        eventBus.on('ATTESTATION_KIT_ADDED_ADDRESS', async (from_address, data) => {
+            if (this.onAddressAdded) {
+                this.onAddressAdded(from_address, data);
+            }
+
+            if (this.getFirstPairedInstruction) {
+                const instruction = this.getFirstPairedInstruction(data);
+
+                device.sendMessageToDevice(from_address, 'text', instruction);
+            }
+        });
     }
+
+    // must be implemented by derived classes
+    onPaired(from_address, data) { }
+
+    // must be implemented by derived classes
+    onAddressAdded(from_address, wallet_address) { }
+
 
     /**
      *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
      * @abstract
-     * @throws {ErrorWithMessage} When called directly on BaseStrategy
      * @returns {void}
      */
-    static getProviderInstruction() {
-        throw new ErrorWithMessage(`${this.strategy}: getProviderInstruction method is not implemented`);
-    }
+    getFirstPairedInstruction() { }
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
