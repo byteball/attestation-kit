@@ -49,7 +49,7 @@ class BaseStrategy {
 
             if (this.getFirstPairedInstruction) {
                 const instruction = this.getFirstPairedInstruction(data);
-                this.logger.error('instruction', instruction);
+
                 device.sendMessageToDevice(from_address, 'text', instruction);
             }
         });
