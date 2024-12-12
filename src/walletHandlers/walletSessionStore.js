@@ -12,14 +12,14 @@ class SessionStore {
         // }
     }
 
-    createSession(deviceAddress, provider) {
+    createSession(deviceAddress) {
         const session = this.sessions.get(deviceAddress);
 
         if (this.sessions.has(deviceAddress)) {
             return session;
         } else {
             const value = new Map([
-                ["provider", value],
+                // ["provider", ],
                 ["ts", new Date().getTime()],
             ]);
 
