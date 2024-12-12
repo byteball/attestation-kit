@@ -47,8 +47,9 @@ class BaseStrategy {
                 this.onAddressAdded(from_address, data);
             }
 
-            if(this.getFirstPairedInstruction) {
+            if (this.getFirstPairedInstruction) {
                 const instruction = this.getFirstPairedInstruction(data);
+                this.logger.error('instruction', instruction);
                 device.sendMessageToDevice(from_address, 'text', instruction);
             }
         });
