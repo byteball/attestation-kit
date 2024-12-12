@@ -64,12 +64,9 @@ class BaseStrategy {
     /**
      *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
      * @abstract
-     * @throws {ErrorWithMessage} When called directly on BaseStrategy
      * @returns {void}
      */
-    getFirstPairedInstruction() {
-        throw new ErrorWithMessage(`${this.strategy}: getFirstPairedInstruction method is not implemented`);
-    }
+    getFirstPairedInstruction() { }
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
