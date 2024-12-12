@@ -55,11 +55,13 @@ eventBus.on('paired', async (from_address, data) => {
     } else {
         walletSessionStore.createSession(from_address);
 
-        device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME, () => {
-            device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_ADDRESS);
-            eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
+        device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME, {
+            ifOk: () => {
+                device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_ADDRESS);
+                eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
+            }
         });
+    };
 
-        unlock();
-    }
+    unlock();
 });
