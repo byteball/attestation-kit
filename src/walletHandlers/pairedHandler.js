@@ -55,7 +55,7 @@ eventBus.on('paired', async (from_address, data) => {
     } else {
         device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
         walletSessionStore.createSession(from_address);
-        device.sendMessageToDevice(from_address, 'text', dictionary.common.INVALID_WALLET_ADDRESS);
+        device.sendMessageToDevice(from_address, 'text', dictionary.common.ASK_ADDRESS);
         eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
     }
 });
