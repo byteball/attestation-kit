@@ -48,7 +48,7 @@ class BaseStrategy {
             }
 
             if(this.getFirstPairedInstruction) {
-                const instruction = this.getFirstPairedInstruction();
+                const instruction = this.getFirstPairedInstruction(data);
                 device.sendMessageToDevice(from_address, 'text', instruction);
             }
         });
