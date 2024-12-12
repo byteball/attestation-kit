@@ -53,6 +53,7 @@ eventBus.on('paired', async (from_address, data) => {
         device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, { provider, ...dataObject }));
         unlock();
     } else {
+        console.error('data', data);
         walletSessionStore.createSession(from_address);
 
         device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME, {
@@ -61,7 +62,7 @@ eventBus.on('paired', async (from_address, data) => {
                 eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
             }
         });
-
+        console.error('data2', data);
         unlock();
     };
 });
