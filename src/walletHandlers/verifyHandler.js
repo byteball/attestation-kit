@@ -69,7 +69,7 @@ module.exports = async (from_address, data) => {
 
                                 await DbService.updateUnitAndChangeStatus(provider, data, address, unit);
 
-                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider, address, unit, data });
+                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider, address, unit, data, device_address: from_address });
 
                                 return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
 

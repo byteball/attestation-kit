@@ -36,9 +36,9 @@ class BaseStrategy {
         this.logger = logger;
         this.init();
 
-        eventBus.on('ATTESTATION_KIT_JUST_PAIRED', async (from_address, data) => {
-            if (this.onPaired) {
-                this.onPaired(from_address, data);
+        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address, data) => {
+            if (this.onWalletPaired) {
+                this.onWalletPaired(from_address, data);
             }
         });
 
@@ -53,14 +53,24 @@ class BaseStrategy {
                 device.sendMessageToDevice(from_address, 'text', instruction);
             }
         });
+
+        eventBus.on('ATTESTATION_KIT_ATTESTED', async ({ device_address, ...data }) => {
+            if (this.onAttested) {
+                this.onAttested(device_address, data);
+            }
+        });
     }
 
+    // EVENTS
+
     // must be implemented by derived classes
-    onPaired(from_address, data) { }
+    onWalletPaired(from_address, data) { }
 
     // must be implemented by derived classes
     onAddressAdded(from_address, wallet_address) { }
 
+    // must be implemented by derived classes
+    onAttested(device_address, data) { }
 
     /**
      *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
