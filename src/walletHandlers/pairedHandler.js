@@ -58,7 +58,7 @@ eventBus.on('paired', async (from_address, data) => {
     } else { // no data
         walletSessionStore.createSession(from_address);
         
-        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', { device_address: from_address });
+        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', from_address);
 
         unlock();
     };
