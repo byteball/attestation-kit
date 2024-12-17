@@ -62,7 +62,7 @@ eventBus.on('paired', async (from_address, data) => {
         device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
         device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_ADDRESS);
 
-        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', { device_address: from_address, provider, });
+        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', { device_address: from_address });
 
         unlock();
     };

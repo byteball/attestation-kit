@@ -37,9 +37,9 @@ class BaseStrategy {
         this.init();
 
         // Event listeners
-        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address, data) => {
+        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
             if (this.onWalletPaired) {
-                this.onWalletPaired(from_address, data);
+                this.onWalletPaired(from_address);
             }
         });
 
