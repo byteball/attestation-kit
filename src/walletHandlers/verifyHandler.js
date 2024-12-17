@@ -43,34 +43,32 @@ module.exports = async (from_address, data) => {
             return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
         }
 
-        logger.error('validation', objSignedMessage)
-
         const { signed_message, authors: [{ address: walletAddress }] } = objSignedMessage;
 
         try {
             const signedData = JSON.parse(signed_message);
 
-            const { address, provider, ...data } = signedData;
+            const { address, ...data } = signedData;
 
             if (walletAddress || !address) {
                 if (walletAddress === address) {
-                    const order = await DbService.getAttestationOrders({ serviceProvider: provider, data, address });
+                    const order = await DbService.getAttestationOrders({ serviceProvider: data.provider, data, address });
 
                     if (order) {
                         if (order.status === 'attested') {
-                            return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(provider, walletAddress, { username, userId: id }));
+                            return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(data.provider, walletAddress, { username, userId: id }));
                         }
 
-                        if (isEqual(transformDataValuesToObject(order), data) && provider === order.service_provider) {
+                        if (isEqual(transformDataValuesToObject(order), data) && data.provider === order.service_provider) {
 
                             device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
 
                             try {
                                 const unit = await postAttestationProfile(order.service_provider, address, data);
 
-                                await DbService.updateUnitAndChangeStatus(provider, data, address, unit);
+                                await DbService.updateUnitAndChangeStatus(data.provider, data, address, unit);
 
-                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider, address, unit, data, device_address: from_address });
+                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider: data.provider, address, unit, data, device_address: from_address });
 
                                 return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
 
