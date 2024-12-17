@@ -36,9 +36,16 @@ class BaseStrategy {
         this.logger = logger;
         this.init();
 
+        // Event listeners
         eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address, data) => {
             if (this.onWalletPaired) {
                 this.onWalletPaired(from_address, data);
+            }
+        });
+
+        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', async (device_address, provider, data) => {
+            if (this.onWalletPairedWithData) {
+                this.onWalletPairedWithData(device_address, provider, data);
             }
         });
 
@@ -65,6 +72,9 @@ class BaseStrategy {
 
     // must be implemented by derived classes
     onWalletPaired(from_address, data) { }
+
+    // must be implemented by derived classes
+    onWalletPairedWithData(device_address, provider, data) { }
 
     // must be implemented by derived classes
     onAddressAdded(from_address, wallet_address) { }
