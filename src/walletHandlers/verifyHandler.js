@@ -68,43 +68,43 @@ module.exports = async (from_address, data) => {
 
             logger.error('message', message, address)
 
-            if (!address || walletAddress === address) {
+            if (!address && !walletAddress || walletAddress !== address) {
+                return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
+            }
 
-                logger.error('message2', message, address)
+            logger.error('message2', message, address)
 
-                const order = await DbService.getAttestationOrders({ data, address });
+            const order = await DbService.getAttestationOrders({ data, address });
 
-                if (order) {
-                    if (order.status === 'attested') {
-                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(walletAddress, { username, userId: id }));
+            if (order) {
+                if (order.status === 'attested') {
+                    return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(walletAddress, { username, userId: id }));
+                }
+
+                if (isEqual(transformDataValuesToObject(order), data)) {
+
+                    device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
+
+                    try {
+                        const unit = await postAttestationProfile(address, data);
+
+                        await DbService.updateUnitAndChangeStatus(data, address, unit);
+
+                        eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
+
+                        return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
+
+                    } catch (err) {
+                        logger.error('Error in postAttestation:', err);
+                        return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
                     }
 
-                    if (isEqual(transformDataValuesToObject(order), data)) {
-
-                        device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
-
-                        try {
-                            const unit = await postAttestationProfile(address, data);
-
-                            await DbService.updateUnitAndChangeStatus(data, address, unit);
-
-                            eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
-
-                            return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
-
-                        } catch (err) {
-                            logger.error('Error in postAttestation:', err);
-                            return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
-                        }
-
-                    } else {
-                        return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
-                    }
                 } else {
-                    return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
+                    return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
                 }
             } else {
-                return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
+                return eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address, device_address: from_address });
+                // return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
             }
         } catch (err) {
             logger.error('Error in signed message:', err);

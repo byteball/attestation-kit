@@ -56,6 +56,12 @@ class BaseStrategy {
                 this.onAttested(device_address, data);
             }
         });
+
+        eventBus.on('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', async ({ address, device_address }) => {
+            if (this.onAttestedOnlyWalletAddress) {
+                this.onAttestedOnlyWalletAddress(device_address, address);
+            }
+        });
     }
 
     // EVENTS
@@ -85,7 +91,7 @@ class BaseStrategy {
      * @param {string} from_address - The address from which the event originated.
      * @param {string} wallet_address - The wallet address that was added.
      */
-    onAddressAdded(from_address, wallet_address) { }
+    onAddressAdded(device_address, wallet_address) { }
 
     /**
      * Handler for attestation completion events.
@@ -95,6 +101,16 @@ class BaseStrategy {
      * @param {Object} data - The attestation data.
      */
     onAttested(device_address, data) { }
+
+     /**
+     * Handler for attestation completion events.
+     * Must be implemented by derived classes.
+     * @abstract
+     * @param {string} device_address - The address of the device that completed attestation.
+     * @param {Object} wallet_address - The wallet address that was attested.
+     */
+     onAttestedOnlyWalletAddress(device_address, wallet_address) { }
+    
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
