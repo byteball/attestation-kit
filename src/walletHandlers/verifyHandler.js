@@ -48,7 +48,17 @@ module.exports = async (from_address, data) => {
         try {
             const signedData = JSON.parse(signed_message);
 
-            const { address, ...data } = signedData;
+            const { message, ...data } = signedData;
+
+            let address = data.address;
+
+            if (message && message.includes('I own the address:')) {
+                address = message.replace('I own the address:', '').trim();
+
+                if (!validation.isValidAddress(address)) {
+                    return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
+                }
+            }
 
             if (walletAddress || !address) {
                 if (walletAddress === address) {
