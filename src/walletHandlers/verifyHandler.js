@@ -42,7 +42,6 @@ module.exports = async (from_address, data) => {
         if (err) return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
 
         if (!objSignedMessage.authors || objSignedMessage.authors.length === 0) {
-            logger.error('authors not found');
             return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
         }
 
@@ -50,7 +49,7 @@ module.exports = async (from_address, data) => {
 
         try {
             logger.error('signed_message', signed_message);
-            const signedData = JSON.parse(signed_message);
+            const signedData = JSON.parse(signed_message.trim());
             logger.error('signedData', signedData)
             const { message, ...data } = signedData;
             logger.error('data', message, data);
