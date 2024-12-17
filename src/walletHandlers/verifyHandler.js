@@ -60,44 +60,45 @@ module.exports = async (from_address, data) => {
                 }
             }
 
-            if (walletAddress || !address) {
-                if (walletAddress === address) {
-                    const order = await DbService.getAttestationOrders({ serviceProvider: data.provider, data, address });
+            logger.error('message', message, address)
 
-                    if (order) {
-                        if (order.status === 'attested') {
-                            return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(data.provider, walletAddress, { username, userId: id }));
+            if (!address || walletAddress === address) {
+
+                logger.error('message2', message, address)
+
+                const order = await DbService.getAttestationOrders({ serviceProvider: data.provider, data, address });
+
+                if (order) {
+                    if (order.status === 'attested') {
+                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(data.provider, walletAddress, { username, userId: id }));
+                    }
+
+                    if (isEqual(transformDataValuesToObject(order), data) && data.provider === order.service_provider) {
+
+                        device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
+
+                        try {
+                            const unit = await postAttestationProfile(order.service_provider, address, data);
+
+                            await DbService.updateUnitAndChangeStatus(data.provider, data, address, unit);
+
+                            eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider: data.provider, address, unit, data, device_address: from_address });
+
+                            return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
+
+                        } catch (err) {
+                            logger.error('Error in postAttestation:', err);
+                            return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
                         }
 
-                        if (isEqual(transformDataValuesToObject(order), data) && data.provider === order.service_provider) {
-
-                            device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
-
-                            try {
-                                const unit = await postAttestationProfile(order.service_provider, address, data);
-
-                                await DbService.updateUnitAndChangeStatus(data.provider, data, address, unit);
-
-                                eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider: data.provider, address, unit, data, device_address: from_address });
-
-                                return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
-
-                            } catch (err) {
-                                logger.error('Error in postAttestation:', err);
-                                return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
-                            }
-
-                        } else {
-                            return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
-                        }
                     } else {
-                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
+                        return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
                     }
                 } else {
-                    return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
+                    return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
                 }
             } else {
-                return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.SIGNED_MSG_MISS_ADDRESS);
+                return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
             }
         } catch (err) {
             logger.error('Error in signed message:', err);
