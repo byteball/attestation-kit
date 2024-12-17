@@ -5,6 +5,7 @@
 
 const device = require('ocore/device');
 const eventBus = require('ocore/event_bus.js');
+const conf = require('ocore/conf');
 
 const DbService = require('../db/DbService');
 const dictionary = require('../../dictionary');
@@ -15,6 +16,8 @@ const Validation = require('../utils/Validation');
 
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual } = require('lodash');
+
+const defaultServiceProvider = conf.serviceProvider || 'default';
 
 module.exports = async (from_address, data) => {
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
@@ -71,11 +74,11 @@ module.exports = async (from_address, data) => {
 
                 logger.error('message2', message, address)
 
-                const order = await DbService.getAttestationOrders({ serviceProvider: data.provider, data, address });
+                const order = await DbService.getAttestationOrders({ serviceProvider: defaultServiceProvider, data, address });
 
                 if (order) {
                     if (order.status === 'attested') {
-                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(data.provider, walletAddress, { username, userId: id }));
+                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(defaultServiceProvider, walletAddress, { username, userId: id }));
                     }
 
                     if (isEqual(transformDataValuesToObject(order), data) && data.provider === order.service_provider) {
