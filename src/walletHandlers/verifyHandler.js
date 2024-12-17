@@ -17,8 +17,6 @@ const Validation = require('../utils/Validation');
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual } = require('lodash');
 
-const defaultServiceProvider = conf.serviceProvider || 'default';
-
 module.exports = async (from_address, data) => {
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
 
@@ -74,23 +72,23 @@ module.exports = async (from_address, data) => {
 
                 logger.error('message2', message, address)
 
-                const order = await DbService.getAttestationOrders({ serviceProvider: defaultServiceProvider, data, address });
+                const order = await DbService.getAttestationOrders({ data, address });
 
                 if (order) {
                     if (order.status === 'attested') {
-                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(defaultServiceProvider, walletAddress, { username, userId: id }));
+                        return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(walletAddress, { username, userId: id }));
                     }
 
-                    if (isEqual(transformDataValuesToObject(order), data) && data.provider === order.service_provider) {
+                    if (isEqual(transformDataValuesToObject(order), data)) {
 
                         device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
 
                         try {
-                            const unit = await postAttestationProfile(order.service_provider, address, data);
+                            const unit = await postAttestationProfile(address, data);
 
-                            await DbService.updateUnitAndChangeStatus(data.provider, data, address, unit);
+                            await DbService.updateUnitAndChangeStatus(data, address, unit);
 
-                            eventBus.emit('ATTESTATION_KIT_ATTESTED', { provider: data.provider, address, unit, data, device_address: from_address });
+                            eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
 
                             return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
 
