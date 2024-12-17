@@ -69,7 +69,13 @@ class BaseStrategy {
     // must be implemented by derived classes
     onAddressAdded(from_address, wallet_address) { }
 
-    // must be implemented by derived classes
+    /**
+     * Handler for attestation completion events. This method must be implemented by derived classes.
+     * @abstract
+     * @param {string} device_address - The address of the device that completed attestation
+     * @param {Object} data - The attestation data
+     * @returns {void}
+     */
     onAttested(device_address, data) { }
 
     /**
