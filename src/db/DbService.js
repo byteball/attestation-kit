@@ -135,19 +135,20 @@ class DbService {
         // Building the query dynamically based on filters
         let query = 'SELECT * FROM ATTESTATION_KIT_attestations WHERE ';
         const queryParams = [];
+        const dataEntries = Object.entries(data);
 
-        Object.entries(data).forEach(([key, value]) => {
+        dataEntries.forEach(([key, value]) => {
             query += `(dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?) `;
             queryParams.push(key, value, key, value, key, value, key, value);
         });
 
         if (address) {
-            query += ' AND user_wallet_address = ?';
+            query += (dataEntries.length ? 'AND' : '') + ' user_wallet_address = ?';
             queryParams.push(address);
         }
 
         if (excludeAttested) {
-            query += ' AND status != "attested"';
+            query += (dataEntries.length || address ? ' AND ' : '') + 'status != "attested"';
         }
 
         // Execute the query
