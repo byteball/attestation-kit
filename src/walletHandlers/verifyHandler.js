@@ -11,6 +11,8 @@ const dictionary = require('../../dictionary');
 
 const postAttestationProfile = require('../utils/postAttestationProfile');
 const logger = require('../utils/logger');
+const Validation = require('../utils/Validation');
+
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual } = require('lodash');
 
@@ -56,9 +58,9 @@ module.exports = async (from_address, data) => {
             let address = data.address;
 
             if (message && message.includes('I own the address:')) {
-                address = message.replace('I own the address:', '').trim();
+                address = message.replace('I own the address: ', '').trim();
 
-                if (!validation.isValidAddress(address)) {
+                if (!Validation.isWalletAddress(address)) {
                     return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
                 }
             }
