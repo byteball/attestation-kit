@@ -43,6 +43,7 @@ module.exports = async (from_address, data) => {
             return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
         }
 
+        logger.error('validation', objSignedMessage)
 
         const { signed_message, authors: [{ address: walletAddress }] } = objSignedMessage;
 
