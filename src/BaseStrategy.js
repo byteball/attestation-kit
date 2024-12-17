@@ -33,9 +33,15 @@ class BaseStrategy {
         this.init();
 
         // Event listeners
-        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
+        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED', async (from_address) => {
             if (this.onWalletPaired) {
                 this.onWalletPaired(from_address);
+            }
+        });
+
+        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
+            if (this.onWalletPairedWithoutData) {
+                this.onWalletPairedWithoutData(from_address);
             }
         });
 
@@ -77,6 +83,14 @@ class BaseStrategy {
 
     /**
      * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired.
+     * @abstract
+     * @param {string} from_address - The address of the paired wallet.
+     */
+    onWalletPairedWithoutData(from_address) { }
+
+    /**
+     * Must be implemented by derived classes.
      * Event handler called when a wallet is paired with data.
      * @abstract
      * @param {string} device_address - The device address of the paired wallet.
@@ -102,15 +116,15 @@ class BaseStrategy {
      */
     onAttested(device_address, data) { }
 
-     /**
-     * Handler for attestation completion events.
-     * Must be implemented by derived classes.
-     * @abstract
-     * @param {string} device_address - The address of the device that completed attestation.
-     * @param {Object} wallet_address - The wallet address that was attested.
-     */
-     onAttestedOnlyWalletAddress(device_address, wallet_address) { }
-    
+    /**
+    * Handler for attestation completion events.
+    * Must be implemented by derived classes.
+    * @abstract
+    * @param {string} device_address - The address of the device that completed attestation.
+    * @param {Object} wallet_address - The wallet address that was attested.
+    */
+    onAttestedOnlyWalletAddress(device_address, wallet_address) { }
+
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
