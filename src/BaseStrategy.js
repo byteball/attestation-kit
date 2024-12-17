@@ -53,12 +53,6 @@ class BaseStrategy {
             if (this.onAddressAdded) {
                 this.onAddressAdded(from_address, data);
             }
-
-            if (this.getFirstPairedInstruction) {
-                const instruction = this.getFirstPairedInstruction(data);
-
-                device.sendMessageToDevice(from_address, 'text', instruction);
-            }
         });
 
         eventBus.on('ATTESTATION_KIT_ATTESTED', async ({ device_address, ...data }) => {
@@ -106,14 +100,6 @@ class BaseStrategy {
      * @param {Object} data - The attestation data.
      */
     onAttested(device_address, data) { }
-
-    /**
-     * Provides instructions for the user to follow.
-     * Must be implemented by all derived classes.
-     * @abstract
-     * @returns {void}
-     */
-    getFirstPairedInstruction() { }
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
