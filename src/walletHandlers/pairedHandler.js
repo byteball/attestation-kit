@@ -13,7 +13,7 @@ const walletSessionStore = require('./walletSessionStore');
 eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
 
-    if (typeof data === 'string' && (data.match(/-/g) || []).length === 2) {
+    if (typeof data === 'string' && (data.match(/-/g) || []).length === 2) { // data is in the format: provider-address-data
         const [provider, address, dataString] = data.split('-');
 
         let dataObject = {};
@@ -55,8 +55,7 @@ eventBus.on('paired', async (from_address, data) => {
         eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, provider, data: dataObject });
 
         unlock();
-    } else {
-        console.error('data', data);
+    } else { // no data
         walletSessionStore.createSession(from_address);
 
         device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
