@@ -133,11 +133,11 @@ class DbService {
         if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         // Building the query dynamically based on filters
-        let query = 'SELECT * FROM ATTESTATION_KIT_attestations WHERE ';
+        let query = 'SELECT * FROM ATTESTATION_KIT_attestations';
         const queryParams = [];
 
         Object.entries(data).forEach(([key, value]) => {
-            query += ` AND (dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?) `;
+            query += `WHERE (dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?) `;
             queryParams.push(key, value, key, value, key, value, key, value);
         });
 
