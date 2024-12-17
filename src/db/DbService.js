@@ -139,6 +139,7 @@ class DbService {
 
         dataEntries.forEach(([key, value]) => {
             query += `(dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?)`;
+            if (index > 0 && dataEntries.length < index) query += ' OR ';
             queryParams.push(key, value, key, value, key, value, key, value);
         });
 
