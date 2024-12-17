@@ -70,26 +70,46 @@ class BaseStrategy {
 
     // EVENTS
 
-    // must be implemented by derived classes
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired.
+     * @abstract
+     * @param {string} from_address - The address of the paired wallet.
+     * @param {Object} data - Additional data associated with the pairing event.
+     */
     onWalletPaired(from_address, data) { }
 
-    // must be implemented by derived classes
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired with data.
+     * @abstract
+     * @param {string} device_address - The device address of the paired wallet.
+     * @param {string} provider - The name of the service provider.
+     * @param {Object} data - Additional data associated with the pairing event.
+     */
     onWalletPairedWithData(device_address, provider, data) { }
 
-    // must be implemented by derived classes
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when an address is added.
+     * @abstract
+     * @param {string} from_address - The address from which the event originated.
+     * @param {string} wallet_address - The wallet address that was added.
+     */
     onAddressAdded(from_address, wallet_address) { }
 
     /**
-     * Handler for attestation completion events. This method must be implemented by derived classes.
+     * Handler for attestation completion events.
+     * Must be implemented by derived classes.
      * @abstract
-     * @param {string} device_address - The address of the device that completed attestation
-     * @param {Object} data - The attestation data
-     * @returns {void}
+     * @param {string} device_address - The address of the device that completed attestation.
+     * @param {Object} data - The attestation data.
      */
     onAttested(device_address, data) { }
 
     /**
-     *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
+     * Provides instructions for the user to follow.
+     * Must be implemented by all derived classes.
      * @abstract
      * @returns {void}
      */
