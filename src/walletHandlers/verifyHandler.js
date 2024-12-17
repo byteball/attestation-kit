@@ -15,7 +15,7 @@ const logger = require('../utils/logger');
 const Validation = require('../utils/Validation');
 
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
-const { isEqual } = require('lodash');
+const { isEqual, isEmpty } = require('lodash');
 
 module.exports = async (from_address, data) => {
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
@@ -51,11 +51,8 @@ module.exports = async (from_address, data) => {
         const { signed_message, authors: [{ address: walletAddress }] } = objSignedMessage;
 
         try {
-            logger.error('signed_message', signed_message);
             const signedData = JSON.parse(signed_message.trim());
-            logger.error('signedData', signedData)
             const { message, ...data } = signedData;
-            logger.error('data', message, data);
             let address = data.address;
 
             if (message && message.includes('I own the address:')) {
@@ -66,13 +63,9 @@ module.exports = async (from_address, data) => {
                 }
             }
 
-            logger.error('message', message, address)
-
             if (!address && !walletAddress || walletAddress !== address) {
                 return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
             }
-
-            logger.error('message2', message, address)
 
             const order = await DbService.getAttestationOrders({ data, address });
 
@@ -83,7 +76,7 @@ module.exports = async (from_address, data) => {
 
                 if (isEqual(transformDataValuesToObject(order), data)) {
 
-                    device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit later.');
+                    device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit.');
 
                     try {
                         const unit = await postAttestationProfile(address, data);
@@ -92,8 +85,7 @@ module.exports = async (from_address, data) => {
 
                         eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
 
-                        return device.sendMessageToDevice(from_address, 'text', `Attestation unit: ${unit}`);
-
+                        return device.sendMessageToDevice(from_address, 'text', `Attestation unit: https://${conf.testnet ? 'testnet' : ''}explorer.obyte.org/${unit}`);
                     } catch (err) {
                         logger.error('Error in postAttestation:', err);
                         return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
@@ -102,9 +94,10 @@ module.exports = async (from_address, data) => {
                 } else {
                     return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
                 }
-            } else {
+            } else if (isEmpty(data)) {
                 return eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address, device_address: from_address });
-                // return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
+            } else {
+                return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
             }
         } catch (err) {
             logger.error('Error in signed message:', err);
