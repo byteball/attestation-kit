@@ -138,17 +138,17 @@ class DbService {
         const dataEntries = Object.entries(data);
 
         dataEntries.forEach(([key, value]) => {
-            query += `(dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?) `;
+            query += `(dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?)`;
             queryParams.push(key, value, key, value, key, value, key, value);
         });
 
         if (address) {
-            query += (dataEntries.length ? 'AND' : '') + ' user_wallet_address = ?';
+            query += (dataEntries.length ? ' AND' : '') + ' user_wallet_address = ?';
             queryParams.push(address);
         }
 
         if (excludeAttested) {
-            query += (dataEntries.length || address ? ' AND ' : '') + 'status != "attested"';
+            query += (dataEntries.length || address ? ' AND' : '') + ' status != "attested"';
         }
 
         // Execute the query
