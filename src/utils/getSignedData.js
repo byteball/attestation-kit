@@ -2,7 +2,7 @@ const validationFunc = require('./Validation');
 
 module.exports = async (deviceAddress, data) => {
     const validation = require('ocore/validation.js');
-
+    console.error('signedData(start)');
     if (typeof data !== 'string') {
         throw new Error('Expected data to be a string');
     }
