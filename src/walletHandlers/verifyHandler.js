@@ -19,60 +19,34 @@ const transformDataValuesToObject = require('../utils/transformDataValuesToObjec
 const { isEqual, isEmpty } = require('lodash');
 
 module.exports = async (deviceAddress, data) => {
-    console.error('test1', deviceAddress, data);
+    let signedData;
+
     try {
-        logger.error('signedData(start)');
-        const signedData = await getSignedData(deviceAddress, data);
-        logger.error('signedData(result)', signedData);
+        signedData = await getSignedData(deviceAddress, data);
     } catch (err) {
         logger.error('signedData(error)', err);
+        return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
     }
 
-    // const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
 
-    // if (!arrSignedMessageMatches || arrSignedMessageMatches.length < 2) {
-    //     return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
-    // }
+    const { message, data, senderWalletAddress, attestationWalletAddress } = signedData;
 
-    // const signedMessageBase64 = arrSignedMessageMatches[1];
-    // const signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString('utf8');
-    // let objSignedMessage;
+    if (!attestationWalletAddress || !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) {
+        return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
+    }
 
-    // try {
-    //     objSignedMessage = JSON.parse(signedMessageJson);
-    // } catch (err) {
-    //     logger.error(err);
-    //     return device.sendMessageToDevice(deviceAddress, 'text', 'Unknown error! Please try again.');
-    // }
+    logger.error('verify', message, data, senderWalletAddress);
 
-    // const validation = require('ocore/validation.js');
+    const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
 
-    // validation.validateSignedMessage(objSignedMessage, async err => {
-    //     if (err) return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
+    logger.error('order', order);
 
-    //     if (!objSignedMessage.authors || objSignedMessage.authors.length === 0) {
-    //         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
-    //     }
-
-    //     const { signed_message, authors: [{ address: senderWalletAddress }] } = objSignedMessage;
-
-    //     try {
-    //         const signedData = JSON.parse(signed_message.trim());
-    //         const { message, ...data } = signedData;
-    //         let attestationWalletAddress = data.address;
-
-    //         // get and validate address
-    //         if (message && message.includes('I own the address:')) {
-    //             attestationWalletAddress = message.replace('I own the address: ', '').trim();
-
-    //             if (!Validation.isWalletAddress(attestationWalletAddress)) {
-    //                 return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
-    //             }
-    //         }
-
-    //         if (!attestationWalletAddress || !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) {
-    //             return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
-    //         }
+    if (order) {
+        logger.error('order', "YES");
+    } else {
+        logger.error('order', "NO");
+        return device.sendMessageToDevice(deviceAddress, 'text', dictionary.common.CANNOT_FIND_ORDER);
+    }
 
     //         const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress });
 
