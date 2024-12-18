@@ -37,6 +37,15 @@ class SessionStore {
         }
     }
 
+    deleteSessionWalletAddress(deviceAddress) {
+        if (this.sessions.has(deviceAddress)) {
+            const session = this.sessions.get(deviceAddress);
+            session.delete('address');
+        } else {
+            logger.error(`Session not found for device address: ${deviceAddress}`);
+        }
+    }
+
     getSessionWalletAddress(deviceAddress) {
         if (this.sessions.has(deviceAddress)) {
             const session = this.sessions.get(deviceAddress);
