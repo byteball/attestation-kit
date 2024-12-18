@@ -21,11 +21,11 @@ const { isEqual, isEmpty } = require('lodash');
 module.exports = async (deviceAddress, data) => {
     console.error('test1', deviceAddress, data);
     try {
-        this.logger.error('signedData(start)');
+        logger.error('signedData(start)');
         const signedData = await getSignedData(deviceAddress, data);
-        this.logger.error('signedData(result)', signedData);
+        logger.error('signedData(result)', signedData);
     } catch (err) {
-        this.logger.error('signedData(error)', err);
+        logger.error('signedData(error)', err);
     }
 
     // const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
