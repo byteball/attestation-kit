@@ -32,7 +32,7 @@ module.exports = async (deviceAddress, msgData) => {
     logger.error('verify handler data', data, { address: attestationWalletAddress, device_address: deviceAddress });
 
     if (isEmpty(data)) return eventBus.emit('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
-    logger.error('ask order');
+    logger.error('ask order', attestationWalletAddress, data);
     const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
     logger.error('order', order);
     if (order) {
