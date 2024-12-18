@@ -1,14 +1,14 @@
 const logger = require('./logger');
 const validationFunc = require('./Validation');
 
-module.exports = async (deviceAddress, data) => {
+module.exports = async (deviceAddress, dataString) => {
     const validation = require('ocore/validation.js');
 
-    if (typeof data !== 'string') {
+    if (typeof dataString !== 'string') {
         throw new Error('Expected data to be a string');
     }
 
-    const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
+    const arrSignedMessageMatches = dataString.match(/\(signed-message:(.+?)\)/);
 
     if (!arrSignedMessageMatches || arrSignedMessageMatches.length < 2) throw new Error('Invalid format');
 
@@ -35,7 +35,7 @@ module.exports = async (deviceAddress, data) => {
 
             try {
                 const signedData = JSON.parse(signed_message.trim());
-                const { message, ...data } = signedData;
+                const { message, data } = signedData;
 
                 logger.error('signedData', signedData, data);
                 let attestationWalletAddress = data.address;
