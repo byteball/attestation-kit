@@ -29,20 +29,17 @@ module.exports = async (deviceAddress, msgData) => {
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
     }
 
-    logger.error('verify handler data', data, { address: attestationWalletAddress, device_address: deviceAddress });
-
     if (isEmpty(data)) return eventBus.emit('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
-    logger.error('ask order', attestationWalletAddress, data);
+
     const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
-    logger.error('order', order);
+
     if (order) {
         device.sendMessageToDevice(deviceAddress, 'text', 'Your data was attested successfully! We will send you unit.');
-        logger.error('order sended');
+
         try {
             const unit = await postAttestationProfile(attestationWalletAddress, data);
-            logger.error('order unit', unit);
             await DbService.updateUnitAndChangeStatus(data, attestationWalletAddress, unit);
-            logger.error('saved', data);
+
             eventBus.emit('ATTESTATION_KIT_ATTESTED', { address: attestationWalletAddress, unit, data, device_address: deviceAddress });
         } catch (err) {
             logger.error('Error occurred during attestation:', err);
