@@ -86,6 +86,21 @@ class DbService {
     }
 
     /**
+   * Updates the wallet device address for an attestation order.
+   * @param {object} orderId - The id of the order.
+   * @param {string} deviceAddress - The new device address.
+   * @returns {Promise<void>}
+   * @throws {ErrorWithMessage} Throws an error if validation fails or if the order does not exist.
+   */
+    static async updateDeviceAddressInAttestationOrder(orderId, deviceAddress) {
+        if (orderId && deviceAddress) {
+            await db.query("UPDATE ATTESTATION_KIT_attestations SET user_device_address = ? WHERE status != 'attested' AND id = ? ", [deviceAddress, orderId]);
+        } else {
+            throw new ErrorWithMessage('Error occurred during address update', { code: 'INVALID_DATA' });
+        }
+    }
+
+    /**
      * Updates the unit and changes the status of an attestation order.
      * @param {object} data - The user's data (maximum 4 key-value pairs).
      * @param {string} address - The wallet address.
