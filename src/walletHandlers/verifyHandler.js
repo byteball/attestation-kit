@@ -18,11 +18,11 @@ const getSignedData = require('../utils/getSignedData');
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual, isEmpty } = require('lodash');
 
-module.exports = async (deviceAddress, data) => {
+module.exports = async (deviceAddress, msgData) => {
     let signedData;
 
     try {
-        signedData = await getSignedData(deviceAddress, data);
+        signedData = await getSignedData(deviceAddress, msgData);
     } catch (err) {
         logger.error('signedData(error)', err);
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
