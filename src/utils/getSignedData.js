@@ -1,9 +1,8 @@
 const validationFunc = require('./Validation');
 
 module.exports = async (deviceAddress, data) => {
-    console.error('deviceAddress, data', deviceAddress, data)
     const validation = require('ocore/validation.js');
-    console.error('signedData(start)');
+
     if (typeof data !== 'string') {
         throw new Error('Expected data to be a string');
     }
@@ -45,7 +44,6 @@ module.exports = async (deviceAddress, data) => {
                         return reject({ error: 'Invalid format' });
                     }
                 }
-
 
                 return resolve({ message, data, senderWalletAddress, attestationWalletAddress, deviceAddress });
             } catch (err) {
