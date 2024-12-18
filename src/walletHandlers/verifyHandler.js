@@ -32,15 +32,15 @@ module.exports = async (deviceAddress, msgData) => {
     const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
 
     if (order) {
-        device.sendMessageToDevice(deviceAddress, 'text', 'Your data was attested successfully! We will send you unit.');
-
-        const unit = await postAttestationProfile(attestationWalletAddress, data);
-
-        await DbService.updateUnitAndChangeStatus(data, attestationWalletAddress, unit);
-
         if (isEmpty(data)) {
             eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
         } else {
+            device.sendMessageToDevice(deviceAddress, 'text', 'Your data was attested successfully! We will send you unit.');
+
+            const unit = await postAttestationProfile(attestationWalletAddress, data);
+
+            await DbService.updateUnitAndChangeStatus(data, attestationWalletAddress, unit);
+
             eventBus.emit('ATTESTATION_KIT_ATTESTED', { address: attestationWalletAddress, unit, data, device_address: deviceAddress });
         }
     } else {
