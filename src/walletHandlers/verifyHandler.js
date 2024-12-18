@@ -19,6 +19,15 @@ const transformDataValuesToObject = require('../utils/transformDataValuesToObjec
 const { isEqual, isEmpty } = require('lodash');
 
 module.exports = async (deviceAddress, data) => {
+
+    try {
+        this.logger.error('signedData(start)');
+        const signedData = await getSignedData(deviceAddress, data);
+        this.logger.error('signedData(result)', signedData);
+    } catch (err) {
+        this.logger.error('signedData(error)', err);
+    }
+
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
 
     if (!arrSignedMessageMatches || arrSignedMessageMatches.length < 2) {
@@ -37,13 +46,6 @@ module.exports = async (deviceAddress, data) => {
     }
 
     const validation = require('ocore/validation.js');
-
-    try {
-        const signedData = await getSignedData(deviceAddress, data);
-        this.logger.error('signedData(result)', signedData);
-    } catch (err) {
-        this.logger.error('signedData(error)', err);
-    }
 
     validation.validateSignedMessage(objSignedMessage, async err => {
         if (err) return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
