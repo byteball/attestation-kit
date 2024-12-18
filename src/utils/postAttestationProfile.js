@@ -24,8 +24,6 @@ async function postAttestationProfile(userAddress, profile) {
 
     if (!attestorAddress) throw new ErrorWithMessage('Attestor address not available', { code: "INVALID_ATTESTOR" })
 
-    return logger.info('attested', userAddress, profile);
-
     return new Promise((resolve, reject) => {
         function onError(err) {
             logger.error('(postAttestationProfile): ' + err);
