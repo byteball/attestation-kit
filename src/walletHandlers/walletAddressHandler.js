@@ -1,10 +1,8 @@
-const device = require('ocore/device');
 const eventBus = require('ocore/event_bus.js');
 
 const { ErrorWithMessage } = require("../utils/ErrorWithMessage");
 const Validation = require("../utils/Validation");
 const walletSessionStore = require("./walletSessionStore");
-// const strategies = require('../strategies/index');
 
 module.exports = async (from_address, data) => {
     if (Validation.isWalletAddress(data)) {
