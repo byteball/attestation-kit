@@ -15,16 +15,16 @@ class DbService {
      * @returns {Promise<number>} The ID of the inserted attestation order.
      * @throws {ErrorWithMessage} Throws an error if validation fails or if the order already exists.
      */
-    static async createAttestationOrder(data, allowDuplicates = true) {
+    static async createAttestationOrder(data, address, allowDuplicates = true) {
         if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
-        const order = await DbService.getAttestationOrders({ data, excludeAttested: allowDuplicates });
+        const order = await DbService.getAttestationOrders({ data, address: address || undefined, excludeAttested: allowDuplicates });
 
         if (!order) {
             const dataValues = Object.values(data);
             const dataKeys = Object.keys(data);
 
-            const { insertId } = await db.query(`INSERT INTO ATTESTATION_KIT_attestations (${dataKeys.map((_v, index) => `dataKey${index}`).join(',')}, ${dataValues.map((_v, index) => `dataValue${index}`).join(',')}) VALUES (${dataKeys.map(() => '?').join(',')}, ${dataValues.map(() => '?').join(',')})`, [...dataKeys, ...dataValues.map((v) => String(v))]);
+            const { insertId } = await db.query(`INSERT INTO ATTESTATION_KIT_attestations (user_wallet_address, ${dataKeys.map((_v, index) => `dataKey${index}`).join(',')}, ${dataValues.map((_v, index) => `dataValue${index}`).join(',')}) VALUES (?, ${dataKeys.map(() => '?').join(',')}, ${dataValues.map(() => '?').join(',')})`, [address || null, ...dataKeys, ...dataValues.map((v) => String(v))]);
 
             return insertId;
 
