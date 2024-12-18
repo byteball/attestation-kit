@@ -38,7 +38,7 @@ module.exports = async (deviceAddress, dataString) => {
                 const { message, data } = signedData;
 
                 logger.error('signedData', signedData, data);
-                let attestationWalletAddress = data.address;
+                let attestationWalletAddress = data?.address;
 
                 if (message && message.includes('I own the address:')) {
                     attestationWalletAddress = message.replace('I own the address: ', '').trim();
