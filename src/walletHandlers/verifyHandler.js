@@ -23,12 +23,13 @@ module.exports = async (deviceAddress, msgData) => {
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
     }
 
-    const { message, data, senderWalletAddress, attestationWalletAddress } = signedData;
+    const { data, senderWalletAddress, attestationWalletAddress } = signedData;
 
     if (!attestationWalletAddress || !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) {
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
     }
-
+    
+    logger.error('-----..---:', { data, address: attestationWalletAddress, excludeAttested: true });
     const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
 
     if (order) {
