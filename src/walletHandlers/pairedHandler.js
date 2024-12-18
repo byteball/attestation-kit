@@ -15,7 +15,7 @@ eventBus.on('paired', async (from_address, data) => {
 
     walletSessionStore.createSession(from_address); // Create a session for the paired wallet
     eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED', from_address);
-
+    logger.error('(data.match(/-/g) || []).length', (data.match(/-/g) || []).length)
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 1) { // data is in the format: address-data
         const [address, dataString] = data.split('-');
 
