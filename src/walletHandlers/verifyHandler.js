@@ -10,7 +10,7 @@ const eventBus = require('ocore/event_bus.js');
 const DbService = require('../db/DbService');
 const dictionary = require('../../dictionary');
 
-const {logger,getSignedData, postAttestationProfile} = require('../utils');
+const { logger, getSignedData, postAttestationProfile } = require('../utils');
 
 
 module.exports = async (deviceAddress, msgData) => {
@@ -39,9 +39,9 @@ module.exports = async (deviceAddress, msgData) => {
         await DbService.updateUnitAndChangeStatus(data, attestationWalletAddress, unit);
 
         if (isEmpty(data)) {
-            eventBus.emit('ATTESTATION_KIT_ATTESTED', { address: attestationWalletAddress, unit, data, device_address: deviceAddress });
-        } else {
             eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
+        } else {
+            eventBus.emit('ATTESTATION_KIT_ATTESTED', { address: attestationWalletAddress, unit, data, device_address: deviceAddress });
         }
     } else {
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.common.CANNOT_FIND_ORDER);
