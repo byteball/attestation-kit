@@ -84,8 +84,6 @@ module.exports = async (from_address, data) => {
                         await DbService.updateUnitAndChangeStatus(data, address, unit);
 
                         eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
-
-                        return device.sendMessageToDevice(from_address, 'text', `Attestation unit: https://${conf.testnet ? 'testnet' : ''}explorer.obyte.org/${unit}`);
                     } catch (err) {
                         logger.error('Error in postAttestation:', err);
                         return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
