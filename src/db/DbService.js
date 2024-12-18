@@ -50,7 +50,7 @@ class DbService {
         if (order) {
             if (!order.user_wallet_address) throw new ErrorWithMessage('User address is not found', { code: 'ADDRESS_NOT_FOUND' });
 
-            if (order.status !== 'attested') throw new ErrorWithMessage('Address is attested', { code: 'ALREADY_ATTESTED' });
+            if (order.status === 'attested' || order.unit) throw new ErrorWithMessage('Address is attested', { code: 'ALREADY_ATTESTED' });
 
             await db.query("UPDATE ATTESTATION_KIT_attestations SET user_wallet_address = NULL, status = 'pending' WHERE id = ?", [order.id]);
         } else {
