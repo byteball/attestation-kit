@@ -13,6 +13,7 @@ const dictionary = require('../../dictionary');
 const postAttestationProfile = require('../utils/postAttestationProfile');
 const logger = require('../utils/logger');
 const Validation = require('../utils/Validation');
+const getSignedData = require('../utils/getSignedData');
 
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual, isEmpty } = require('lodash');
@@ -36,6 +37,13 @@ module.exports = async (deviceAddress, data) => {
     }
 
     const validation = require('ocore/validation.js');
+
+    try {
+        const signedData = await getSignedData(deviceAddress, data);
+        this.logger.error('signedData(result)', signedData);
+    } catch (err) {
+        this.logger.error('signedData(error)', err);
+    }
 
     validation.validateSignedMessage(objSignedMessage, async err => {
         if (err) return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
