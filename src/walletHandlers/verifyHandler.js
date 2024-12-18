@@ -19,6 +19,7 @@ const transformDataValuesToObject = require('../utils/transformDataValuesToObjec
 const { isEqual, isEmpty } = require('lodash');
 
 module.exports = async (deviceAddress, data) => {
+    console.error('test1')
     try {
         this.logger.error('signedData(start)');
         const signedData = await getSignedData(deviceAddress, data);
