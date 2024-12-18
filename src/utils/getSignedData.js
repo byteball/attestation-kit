@@ -1,3 +1,4 @@
+const { logger } = require('.');
 const validationFunc = require('./Validation');
 
 module.exports = async (deviceAddress, data) => {
@@ -35,6 +36,8 @@ module.exports = async (deviceAddress, data) => {
             try {
                 const signedData = JSON.parse(signed_message.trim());
                 const { message, ...data } = signedData;
+                
+                logger.error('signedData', signedData, data);
                 let attestationWalletAddress = data.address;
 
                 if (message && message.includes('I own the address:')) {
