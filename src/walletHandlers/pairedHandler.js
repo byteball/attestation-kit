@@ -24,7 +24,7 @@ eventBus.on('paired', async (from_address, data) => {
         try {
             const dataParams = new URLSearchParams(dataString);
             dataObject = Object.fromEntries(dataParams.entries());
-
+            logger.error('dataObject', dataObject);
             if (dataObject && !Validation.isDataObject(dataObject)) throw new Error('Invalid data object');
         } catch (err) {
             logger.error('Invalid data object:', err);
