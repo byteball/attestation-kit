@@ -29,6 +29,8 @@ module.exports = async (deviceAddress, msgData) => {
         return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
     }
 
+    logger.error('verify handler data', data, { address: attestationWalletAddress, device_address: deviceAddress });
+
     if (isEmpty(data)) return eventBus.emit('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
 
     const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress, excludeAttested: true });
