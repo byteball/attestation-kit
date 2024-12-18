@@ -60,7 +60,7 @@ module.exports = async (deviceAddress, data) => {
                 }
             }
 
-            if (!attestationWalletAddress && !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) { // TODO: Fix if returned case
+            if (!attestationWalletAddress || !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) {
                 return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
             }
 
