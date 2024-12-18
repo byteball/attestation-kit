@@ -38,8 +38,6 @@ module.exports = async (from_address, data) => {
 
     const validation = require('ocore/validation.js');
 
-    logger.error('data', data);
-
     validation.validateSignedMessage(objSignedMessage, async err => {
 
         if (err) return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
