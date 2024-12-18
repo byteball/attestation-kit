@@ -2,6 +2,7 @@ const escape = require('lodash/escape');
 const eventBus = require('ocore/event_bus.js');
 const device = require('ocore/device');
 
+const walletSessionStore = require('./walletHandlers/walletSessionStore');
 const { ErrorWithMessage } = require('../src/utils/ErrorWithMessage');
 const { logger, Validation } = require('../src/utils');
 
@@ -23,22 +24,32 @@ class BaseStrategy {
      * @throws {ErrorWithMessage} Throws an error if the name is not a non-empty string or if the 'domain' environment variable is not set.
     */
     constructor(options) {
-        const provider = new.target.provider;
-
-        if (!provider || typeof provider !== 'string' || provider.endsWith('Strategy')) throw new ErrorWithMessage('Strategy name must be a non-empty string; please provide a name for the strategy like static provider = "providerName"');
         if (!process.env.domain) throw new ErrorWithMessage('Domain is not provided');
 
-        this.provider = provider;
         this.options = options;
 
+        this.sessionStore = walletSessionStore;
         this.validate = Validation;
         this.db = DbService;
         this.logger = logger;
         this.init();
 
-        eventBus.on('ATTESTATION_KIT_JUST_PAIRED', async (from_address, data) => {
-            if (this.onPaired) {
-                this.onPaired(from_address, data);
+        // Event listeners
+        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED', async (from_address) => {
+            if (this.onWalletPaired) {
+                this.onWalletPaired(from_address);
+            }
+        });
+
+        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
+            if (this.onWalletPairedWithoutData) {
+                this.onWalletPairedWithoutData(from_address);
+            }
+        });
+
+        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', async (device_address, data) => {
+            if (this.onWalletPairedWithData) {
+                this.onWalletPairedWithData(device_address, data);
             }
         });
 
@@ -46,28 +57,76 @@ class BaseStrategy {
             if (this.onAddressAdded) {
                 this.onAddressAdded(from_address, data);
             }
+        });
 
-            if (this.getFirstPairedInstruction) {
-                const instruction = this.getFirstPairedInstruction(data);
+        eventBus.on('ATTESTATION_KIT_ATTESTED', async ({ device_address, ...data }) => {
+            if (this.onAttested) {
+                this.onAttested(device_address, data);
+            }
+        });
 
-                device.sendMessageToDevice(from_address, 'text', instruction);
+        eventBus.on('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', async ({ address, device_address }) => {
+            if (this.walletAddressVerified) {
+                this.walletAddressVerified(device_address, address);
             }
         });
     }
 
-    // must be implemented by derived classes
-    onPaired(from_address, data) { }
-
-    // must be implemented by derived classes
-    onAddressAdded(from_address, wallet_address) { }
-
+    // EVENTS
 
     /**
-     *  Provides instructions for the user to follow. This method must be implemented by all derived classes.
+     * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired.
      * @abstract
-     * @returns {void}
+     * @param {string} from_address - The address of the paired wallet.
+     * @param {Object} data - Additional data associated with the pairing event.
      */
-    getFirstPairedInstruction() { }
+    onWalletPaired(from_address, data) { }
+
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired.
+     * @abstract
+     * @param {string} from_address - The address of the paired wallet.
+     */
+    onWalletPairedWithoutData(from_address) { }
+
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when a wallet is paired with data.
+     * @abstract
+     * @param {string} device_address - The device address of the paired wallet.
+     * @param {Object} data - Additional data associated with the pairing event.
+     */
+    onWalletPairedWithData(device_address, data) { }
+
+    /**
+     * Must be implemented by derived classes.
+     * Event handler called when an address is added.
+     * @abstract
+     * @param {string} from_address - The address from which the event originated.
+     * @param {string} wallet_address - The wallet address that was added.
+     */
+    onAddressAdded(device_address, wallet_address) { }
+
+    /**
+     * Handler for attestation completion events.
+     * Must be implemented by derived classes.
+     * @abstract
+     * @param {string} device_address - The address of the device that completed attestation.
+     * @param {Object} data - The attestation data.
+     */
+    onAttested(device_address, data) { }
+
+    /**
+    * Handler for attestation completion events.
+    * Must be implemented by derived classes.
+    * @abstract
+    * @param {string} device_address - The address of the device that completed attestation.
+    * @param {Object} wallet_address - The wallet address that was attested.
+    */
+    walletAddressVerified(device_address, wallet_address) { }
+
 
     /**
      * Initialize the strategy. This method must be implemented by all derived classes.
@@ -76,24 +135,23 @@ class BaseStrategy {
      * @returns {void}
      */
     init() {
-        throw new ErrorWithMessage(`${this.provider}: init method is not implemented`);
+        throw new ErrorWithMessage("init method is not implemented");
     }
 
     /**
      * Constructs the verification URL for the user to verify their wallet address.
      * @param {string} address - The wallet address.
-     * @param {string} serviceProvider - The name of the service provider.
      * @param {string} userId - The user's unique identifier.
      * @param {string} username - The user's username.
      * @returns {string} The verification URL.
-     * @throws {ErrorWithMessage} Throws an error if the address or service provider is invalid.
+     * @throws {ErrorWithMessage} Throws an error if the address is invalid.
      */
-    getVerifyUrl(address, serviceProvider, data) {
-        if (Validation.isWalletAddress(address) && Validation.isServiceProvider(serviceProvider) && Validation.isDataObject(data)) {
+    getVerifyUrl(address, data) {
+        if (Validation.isWalletAddress(address) && Validation.isDataObject(data)) {
             const sanitizedDataObject = new URLSearchParams(data).toString();
-            return `${process.env.domain}/verify/${serviceProvider}/${address}?${sanitizedDataObject}`;
+            return `${process.env.domain}/verify/${address}?${sanitizedDataObject}`;
         } else {
-            throw new ErrorWithMessage('Invalid Data', { address, serviceProvider, address, userId, code: 'INVALID_DATA' });
+            throw new ErrorWithMessage('Invalid Data', { address, userId, code: 'INVALID_DATA' });
         }
     }
 

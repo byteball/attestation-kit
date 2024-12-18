@@ -13,15 +13,18 @@ const walletSessionStore = require('./walletSessionStore');
 eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
 
-    if (typeof data === 'string' && (data.match(/-/g) || []).length === 2) {
-        const [provider, address, dataString] = data.split('-');
+    walletSessionStore.createSession(from_address); // Create a session for the paired wallet
+    eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED', from_address);
+    logger.error('(data.match(/-/g) || []).length', (data.match(/-/g) || []).length)
+    if (typeof data === 'string' && (data.match(/-/g) || []).length === 1) { // data is in the format: address-data
+        const [address, dataString] = data.split('-');
 
         let dataObject = {};
 
         try {
             const dataParams = new URLSearchParams(dataString);
             dataObject = Object.fromEntries(dataParams.entries());
-
+            logger.error('dataObject', dataObject);
             if (dataObject && !Validation.isDataObject(dataObject)) throw new Error('Invalid data object');
         } catch (err) {
             logger.error('Invalid data object:', err);
@@ -33,7 +36,7 @@ eventBus.on('paired', async (from_address, data) => {
         let order;
 
         try {
-            order = await DbService.getAttestationOrders({ serviceProvider: provider, data: dataObject, address });
+            order = await DbService.getAttestationOrders({ data: dataObject, address });
 
             if (!order) {
                 unlock(dictionary.common.CANNOT_FIND_ORDER);
@@ -50,18 +53,15 @@ eventBus.on('paired', async (from_address, data) => {
             return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ORDER_ALREADY_ATTESTED);
         }
 
-        device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, { provider, ...dataObject }));
+        device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
+
+        eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
+
         unlock();
-    } else {
-        console.error('data', data);
-        walletSessionStore.createSession(from_address);
+    } else { // no data
 
-        device.sendMessageToDevice(from_address, 'text', dictionary.common.WELCOME);
-        device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_ADDRESS);
-        eventBus.emit('ATTESTATION_KIT_JUST_PAIRED', { address: from_address });
+        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', from_address);
 
-        console.error('data2', data);
-        
         unlock();
     };
 });

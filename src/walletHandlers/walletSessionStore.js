@@ -28,6 +28,34 @@ class SessionStore {
         }
     }
 
+    setSessionWalletAddress(deviceAddress, value) {
+        if (this.sessions.has(deviceAddress)) {
+            const session = this.sessions.get(deviceAddress);
+            session.set('address', value);
+        } else {
+            logger.error(`Session not found for device address: ${deviceAddress}`);
+        }
+    }
+
+    deleteSessionWalletAddress(deviceAddress) {
+        if (this.sessions.has(deviceAddress)) {
+            const session = this.sessions.get(deviceAddress);
+            session.delete('address');
+        } else {
+            logger.error(`Session not found for device address: ${deviceAddress}`);
+        }
+    }
+
+    getSessionWalletAddress(deviceAddress) {
+        if (this.sessions.has(deviceAddress)) {
+            const session = this.sessions.get(deviceAddress);
+
+            return session.get('address');
+        } else {
+            return null;
+        }
+    }
+
     getSession(deviceAddress) {
 
         if (this.sessions.has(deviceAddress)) {

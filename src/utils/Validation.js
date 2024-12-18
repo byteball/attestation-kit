@@ -24,18 +24,6 @@ class Validation {
             return false;
         }
     }
-    /**
-      * Validates the service provider name.
-      * @param {string} serviceProvider - The name of the service provider.
-      * @returns {boolean} Returns true if the service provider is valid; otherwise, false.
-      */
-    static isServiceProvider(serviceProvider) {
-        if (!serviceProvider || typeof serviceProvider !== 'string' || serviceProvider.length > 20 && !/^[A-Za-z]+$/.test(serviceProvider)) {
-            return false;
-        }
-
-        return true;
-    }
 
     static isDataObject(data) {
         if (!data || typeof data !== 'object') {

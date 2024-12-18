@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS ATTESTATION_KIT_attestations (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     user_wallet_address CHAR(32) NULL CHECK(user_wallet_address IS NULL OR length(user_wallet_address) = 32),
-    user_device_address CHAR(32) NULL CHECK(user_device_address IS NULL OR length(user_device_address) = 32),
-    service_provider CHAR(20) NOT NULL, -- telegram, discord, etc.
+    user_device_address CHAR(32) NULL,
 
     dataKey0 VARCHAR(44) NULL, -- Platform-specific data key
     dataValue0 VARCHAR(44) NULL, -- Platform-specific data value

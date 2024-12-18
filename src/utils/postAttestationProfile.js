@@ -6,25 +6,16 @@ const { ErrorWithMessage } = require('./ErrorWithMessage');
 
 /**
  * Posts an attestation profile to the DAG.
- * @param {string} provider - The name of the service provider.
  * @param {string} userAddress - The user's wallet address.
  * @param {object} profile - The data to attest (maximum 4 key-value pairs).
- * @throws {ErrorWithMessage} Throws an error if any validation fails. (INVALID_SERVICE_PROVIDER, INVALID_ADDRESS, INVALID_DATA, INVALID_ATTESTOR)
+ * @throws {ErrorWithMessage} Throws an error if any validation fails. (INVALID_ADDRESS, INVALID_DATA, INVALID_ATTESTOR)
  * @returns {Promise<string>} Resolves with the unit ID of the posted attestation.
  */
-async function postAttestationProfile(provider, userAddress, profile) {
+async function postAttestationProfile(userAddress, profile) {
     const attestorAddress = await headlessWallet.readFirstAddress();
-
-    if (!provider || !Validation.isServiceProvider(provider)) {
-        throw new ErrorWithMessage('Invalid service provider', { code: "INVALID_SERVICE_PROVIDER" });
-    }
 
     if (!Validation.isWalletAddress(userAddress)) {
         throw new ErrorWithMessage('Invalid address', { code: "INVALID_ADDRESS" });
-    }
-
-    if (profile.provider) {
-        throw new ErrorWithMessage('Field provider will added automatic', { code: "INVALID_PROVIDER" });
     }
 
     if (!Validation.isDataObject(profile)) {
@@ -44,7 +35,6 @@ async function postAttestationProfile(provider, userAddress, profile) {
         const composer = require('ocore/composer.js');
 
         const sanitizedProfile = {
-            provider: String(provider),
             ...profile
         };
 

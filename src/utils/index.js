@@ -5,5 +5,6 @@ module.exports = {
     logger: require('./logger'),
     postAttestationProfile: require('./postAttestationProfile'),
     toUpperCaseFirstLetter: require('./toUpperCaseFirstLetter'),
-    Validation: require('./Validation')
+    Validation: require('./Validation'),
+    getSignedData: require('./getSignedData'),
 }

@@ -21,20 +21,16 @@ const locales = {
 const dictionary = new Proxy(locales, {
     get(target, prop) {
         if (prop === 'set') {
-            return (provider) => {
-                if (!Validation.isServiceProvider(provider)) {
-                    throw new Error(`Invalid service provider name: "${provider}"`);
-                }
-                
-                const filename = provider + '.local.js';
+            return (name) => {
+                const filename = name + '.local.js';
                 const path = process.cwd() + '/dictionary/' + filename;
 
                 if (!fs.existsSync(path)) {
                     throw new ErrorWithMessage(`${filename} file is not in the dictionary folder`, { code: "FILE_NOT_FOUND" });
                 }
 
-                target[provider] = require(path);
-                logger.info(`Locale "${provider}" has been added.`);
+                target[name] = require(path);
+                logger.info(`Locale "${name}" has been added.`);
             };
         }
 
