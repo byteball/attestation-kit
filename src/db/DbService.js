@@ -17,6 +17,7 @@ class DbService {
      */
     static async createAttestationOrder(data, address, allowDuplicates = true) {
         if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
+        if (address && !Validation.isWalletAddress(address)) throw new ErrorWithMessage('Invalid address', { code: 'INVALID_DATA', data, address });
 
         const order = await DbService.getAttestationOrders({ data, address: address || undefined, excludeAttested: allowDuplicates });
 
@@ -137,7 +138,7 @@ class DbService {
         const queryParams = [];
         const dataEntries = Object.entries(data);
 
-        dataEntries.forEach(([key, value]) => {
+        dataEntries.forEach(([key, value], index) => {
             query += `(dataKey0 = ? AND dataValue0 = ?) OR (dataKey1 = ? AND dataValue1 = ?) OR (dataKey2 = ? AND dataValue2 = ?) OR (dataKey3 = ? AND dataValue3 = ?)`;
             if (dataEntries.length < index) query += ' OR ';
             queryParams.push(key, value, key, value, key, value, key, value);
