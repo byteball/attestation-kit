@@ -65,9 +65,9 @@ class BaseStrategy {
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', async ({ address, device_address }) => {
-            if (this.onAttestedOnlyWalletAddress) {
-                this.onAttestedOnlyWalletAddress(device_address, address);
+        eventBus.on('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', async ({ address, device_address }) => {
+            if (this.verifyWalletAddress) {
+                this.verifyWalletAddress(device_address, address);
             }
         });
     }
@@ -125,7 +125,7 @@ class BaseStrategy {
     * @param {string} device_address - The address of the device that completed attestation.
     * @param {Object} wallet_address - The wallet address that was attested.
     */
-    onAttestedOnlyWalletAddress(device_address, wallet_address) { }
+    verifyWalletAddress(device_address, wallet_address) { }
 
 
     /**
