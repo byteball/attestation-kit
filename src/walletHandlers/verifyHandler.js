@@ -17,11 +17,11 @@ const Validation = require('../utils/Validation');
 const transformDataValuesToObject = require('../utils/transformDataValuesToObject');
 const { isEqual, isEmpty } = require('lodash');
 
-module.exports = async (from_address, data) => {
+module.exports = async (deviceAddress, data) => {
     const arrSignedMessageMatches = data.match(/\(signed-message:(.+?)\)/);
 
     if (!arrSignedMessageMatches || arrSignedMessageMatches.length < 2) {
-        return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
+        return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
     }
 
     const signedMessageBase64 = arrSignedMessageMatches[1];
@@ -30,74 +30,73 @@ module.exports = async (from_address, data) => {
 
     try {
         objSignedMessage = JSON.parse(signedMessageJson);
-
     } catch (err) {
         logger.error(err);
-        return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
+        return device.sendMessageToDevice(deviceAddress, 'text', 'Unknown error! Please try again.');
     }
 
     const validation = require('ocore/validation.js');
 
     validation.validateSignedMessage(objSignedMessage, async err => {
-
-        if (err) return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
+        if (err) return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
 
         if (!objSignedMessage.authors || objSignedMessage.authors.length === 0) {
-            return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.VALIDATION_FAILED);
+            return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.VALIDATION_FAILED);
         }
 
-        const { signed_message, authors: [{ address: walletAddress }] } = objSignedMessage;
+        const { signed_message, authors: [{ address: senderWalletAddress }] } = objSignedMessage;
 
         try {
             const signedData = JSON.parse(signed_message.trim());
             const { message, ...data } = signedData;
-            let address = data.address;
+            let attestationWalletAddress = data.address;
 
+            // get and validate address
             if (message && message.includes('I own the address:')) {
-                address = message.replace('I own the address: ', '').trim();
+                attestationWalletAddress = message.replace('I own the address: ', '').trim();
 
-                if (!Validation.isWalletAddress(address)) {
-                    return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
+                if (!Validation.isWalletAddress(attestationWalletAddress)) {
+                    return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
                 }
             }
 
-            if (!address && !walletAddress || walletAddress !== address) {
-                return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_ADDRESS);
+            if (!attestationWalletAddress && !senderWalletAddress || senderWalletAddress !== attestationWalletAddress) { // TODO: Fix if returned case
+                return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_ADDRESS);
             }
 
-            const order = await DbService.getAttestationOrders({ data, address });
+            const order = await DbService.getAttestationOrders({ data, address: attestationWalletAddress });
 
             if (order) {
                 if (order.status === 'attested') {
-                    return device.sendMessageToDevice(from_address, 'text', dictionary.common.ALREADY_ATTESTED(walletAddress, { username, userId: id }));
+                    return device.sendMessageToDevice(deviceAddress, 'text', dictionary.common.ALREADY_ATTESTED(senderWalletAddress, { username, userId: id }));
                 }
 
                 if (isEqual(transformDataValuesToObject(order), data)) {
 
-                    device.sendMessageToDevice(from_address, 'text', 'Your data was attested successfully! We will send you unit.');
+                    device.sendMessageToDevice(deviceAddress, 'text', 'Your data was attested successfully! We will send you unit.');
 
                     try {
-                        const unit = await postAttestationProfile(address, data);
+                        const unit = await postAttestationProfile(attestationWalletAddress, data);
 
-                        await DbService.updateUnitAndChangeStatus(data, address, unit);
+                        await DbService.updateUnitAndChangeStatus(data, attestationWalletAddress, unit);
 
-                        eventBus.emit('ATTESTATION_KIT_ATTESTED', { address, unit, data, device_address: from_address });
+                        eventBus.emit('ATTESTATION_KIT_ATTESTED', { address: attestationWalletAddress, unit, data, device_address: deviceAddress });
                     } catch (err) {
                         logger.error('Error in postAttestation:', err);
-                        return device.sendMessageToDevice(from_address, 'text', 'Unknown error! Please try again.');
+                        return device.sendMessageToDevice(deviceAddress, 'text', 'Unknown error! Please try again.');
                     }
 
                 } else {
-                    return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.MISMATCH_DATA);
+                    return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.MISMATCH_DATA);
                 }
             } else if (isEmpty(data)) {
-                return eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address, device_address: from_address });
+                return eventBus.emit('ATTESTATION_KIT_ATTESTED_ONLY_ADDRESS', { address: attestationWalletAddress, device_address: deviceAddress });
             } else {
-                return device.sendMessageToDevice(from_address, 'text', dictionary.common.CANNOT_FIND_ORDER);
+                return device.sendMessageToDevice(deviceAddress, 'text', dictionary.common.CANNOT_FIND_ORDER);
             }
         } catch (err) {
             logger.error('Error in signed message:', err);
-            return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
+            return device.sendMessageToDevice(deviceAddress, 'text', dictionary.wallet.INVALID_FORMAT_SIGNED_MESSAGE);
         }
     });
 };
