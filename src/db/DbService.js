@@ -52,7 +52,7 @@ class DbService {
 
             if (order.status === 'attested' || order.unit) throw new ErrorWithMessage('Address is attested', { code: 'ALREADY_ATTESTED' });
 
-            await db.query("UPDATE ATTESTATION_KIT_attestations SET user_wallet_address = NULL, status = 'pending' WHERE id = ?", [String(order.id)]);
+            await db.query("UPDATE ATTESTATION_KIT_attestations SET user_wallet_address = NULL, status = 'pending' WHERE id = ?", [Number(order.id)]);
         } else {
             throw new ErrorWithMessage('Order not found or already attested', { code: 'ADDRESS_NOT_FOUND' });
         }
@@ -76,7 +76,7 @@ class DbService {
             if (order) {
                 if (order.status === 'attested') throw new ErrorWithMessage('Address is already attested', { code: 'ALREADY_ATTESTED' });
 
-                await db.query("UPDATE ATTESTATION_KIT_attestations SET user_wallet_address = ?, status = 'addressed' WHERE status != 'attested' AND id = ? ", [walletAddress, String(order.id)]);
+                await db.query("UPDATE ATTESTATION_KIT_attestations SET user_wallet_address = ?, status = 'addressed' WHERE status != 'attested' AND id = ? ", [walletAddress, Number(order.id)]);
             } else {
                 throw new ErrorWithMessage('Order not found', { code: 'ORDER_NOT_FOUND' });
             }
@@ -94,7 +94,7 @@ class DbService {
    */
     static async updateDeviceAddressInAttestationOrder(orderId, deviceAddress) {
         if (orderId && deviceAddress) {
-            await db.query("UPDATE ATTESTATION_KIT_attestations SET user_device_address = ? WHERE status != 'attested' AND id = ? ", [deviceAddress, String(orderId)]);
+            await db.query("UPDATE ATTESTATION_KIT_attestations SET user_device_address = ? WHERE status != 'attested' AND id = ? ", [deviceAddress, Number(orderId)]);
         } else {
             throw new ErrorWithMessage('Error occurred during address update', { code: 'INVALID_DATA' });
         }
@@ -117,7 +117,7 @@ class DbService {
             });
 
             if (order) {
-                await db.query("UPDATE ATTESTATION_KIT_attestations SET unit = ?, status = 'attested' WHERE id = ? AND user_wallet_address = ?", [unit, String(order.id), address]);
+                await db.query("UPDATE ATTESTATION_KIT_attestations SET unit = ?, status = 'attested' WHERE id = ? AND user_wallet_address = ?", [unit, Number(order.id), address]);
             } else {
                 throw new ErrorWithMessage('Order not found', { code: 'ORDER_NOT_FOUND' });
             }
