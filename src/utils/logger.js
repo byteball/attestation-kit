@@ -27,9 +27,9 @@ const loggerFunc = (type, color, ...message) => {
 	}
 
 	if (Number(process.env.debug || 0) === 1) {
-		console.error(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v));
-	} else {
 		console.error(clc[color].bold(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v)));
+	} else {
+		console.error(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v));
 	}
 }
 
