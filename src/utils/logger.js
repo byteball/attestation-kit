@@ -26,7 +26,11 @@ const loggerFunc = (type, color, ...message) => {
 		throw new Error('Message must be an array');
 	}
 
-	console.error(clc[color].bold(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v)));
+	if (process.env.debug === 1) {
+		console.error(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v));
+	} else {
+		console.error(clc[color].bold(`[${type}]: `, ...message.map((v) => typeof v === 'object' ? JSON.stringify(v) : v)));
+	}
 }
 
 /** @type {(...message: any[]) => void} */
