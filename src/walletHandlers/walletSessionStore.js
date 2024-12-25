@@ -1,4 +1,7 @@
 const logger = require('../utils/logger');
+const { customAlphabet } = require('nanoid');
+
+const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 class SessionStore {
     constructor() {
@@ -6,20 +9,21 @@ class SessionStore {
 
         // {
         //     "device_address": {
-        //         "strategy": "0x1234",
+        //         "wallet": "0x1234",
         //         "ts": 123456,
+        //         "id": gdsgsdx,
         //     },
         // }
     }
 
-    createSession(deviceAddress) {
+    createSession(deviceAddress, replace = false) {
         const session = this.sessions.get(deviceAddress);
 
-        if (this.sessions.has(deviceAddress)) {
+        if (this.sessions.has(deviceAddress) && !replace) {
             return session;
         } else {
             const value = new Map([
-                // ["provider", ],
+                ["id", customAlphabet(ALPHABET, 5)],
                 ["ts", new Date().getTime()],
             ]);
 
