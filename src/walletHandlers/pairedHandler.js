@@ -11,6 +11,8 @@ const DbService = require('../db/DbService');
 const walletSessionStore = require('./walletSessionStore');
 
 eventBus.on('paired', async (from_address, data) => {
+    if (data === 'back') return;
+
     const unlock = await mutex.lock(from_address);
 
     walletSessionStore.createSession(from_address); // Create a session for the paired wallet
