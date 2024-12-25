@@ -22,8 +22,10 @@ class SessionStore {
         if (this.sessions.has(deviceAddress) && !replace) {
             return session;
         } else {
+            const id = customAlphabet(ALPHABET, 5)();
+
             const value = new Map([
-                ["id", customAlphabet(ALPHABET, 5)],
+                ["id", id],
                 ["ts", new Date().getTime()],
             ]);
 
