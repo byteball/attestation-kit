@@ -178,7 +178,7 @@ class DbService {
             queryParams.push(address);
         }
 
-        if (id) {
+        if (id !== undefined) {
             if (!query.endsWith('WHERE ')) query += ' AND ';
 
             query += 'id = ?';
