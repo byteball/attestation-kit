@@ -141,17 +141,18 @@ class DbService {
         const {
             data, // for ex: {userId, username}
             address,
+            id,
             excludeAttested = false,
         } = filters;
 
         if (address && !Validation.isWalletAddress(address)) throw new ErrorWithMessage('Invalid wallet address', { code: "INVALID_DATA" });
 
-        if (!Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
+        if (typeof data === 'object' && !Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         // Building the query dynamically based on filters
         let query = 'SELECT * FROM ATTESTATION_KIT_attestations WHERE ';
         const queryParams = [];
-        const dataEntries = Object.entries(data);
+        const dataEntries = Object.entries(data || {});
 
         if (dataEntries.length === 0) {
             query += '1=1';
@@ -171,11 +172,22 @@ class DbService {
 
 
         if (address) {
-            query += ' AND user_wallet_address = ?';
+            if (!query.endsWith('WHERE ')) query += ' AND ';
+
+            query += 'user_wallet_address = ?';
             queryParams.push(address);
         }
 
+        if (id) {
+            if (!query.endsWith('WHERE ')) query += ' AND ';
+
+            query += 'id = ?';
+            queryParams.push(id);
+        }
+
         if (excludeAttested) {
+            if (!query.endsWith('WHERE ')) query += ' AND ';
+
             query += ' AND status != "attested"';
         }
 
