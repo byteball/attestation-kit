@@ -188,7 +188,7 @@ class DbService {
         if (excludeAttested) {
             if (!query.endsWith('WHERE ')) query += ' AND ';
 
-            query += ' AND status != "attested"';
+            query += 'status != "attested"';
         }
 
         // Execute the query
