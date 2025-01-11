@@ -146,7 +146,7 @@ class DbService {
         } = filters;
 
         if (address && !Validation.isWalletAddress(address)) throw new ErrorWithMessage('Invalid wallet address', { code: "INVALID_DATA" });
-
+        if (id !== undefined && (!Number.isInteger(id) || id <= 0)) throw new ErrorWithMessage('Invalid id parameter', { code: "INVALID_DATA" });
         if (typeof data === 'object' && !Validation.isDataObject(data)) throw new ErrorWithMessage('Invalid data object', { code: 'INVALID_DATA', data });
 
         // Building the query dynamically based on filters
