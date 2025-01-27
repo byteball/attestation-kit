@@ -1,5 +1,6 @@
 const dag = require('aabot/dag.js');
 const headlessWallet = require('headless-obyte');
+const conf = require('ocore/conf.js');
 
 const dbService = require('./db');
 const logger = require('./utils/logger');
@@ -18,7 +19,15 @@ module.exports = async (func = () => { }) => {
 
                 const attestorAddress = await headlessWallet.readFirstAddress();
                 const balances = await dag.readBalance(attestorAddress);
-                logger.info(`Attestor balance(${attestorAddress}):`, balances?.base);
+
+                const gbyteBalance = balances?.base?.stable ?? 0;
+                const minimumBalance = conf.minAttestorBalanceForStart ?? 1e6;
+
+                logger.info(`Attestor balance(${attestorAddress}):`, gbyteBalance);
+
+                if (gbyteBalance < minimumBalance) {
+                    throw new Error(`Attestor balance is too low. Please, fund the attestor address. Min balance: ${minimumBalance / 1e9} GBYTE`);
+                }
 
                 const result = await func();
                 resolve(result);
