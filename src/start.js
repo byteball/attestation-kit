@@ -23,7 +23,7 @@ module.exports = async (func = () => { }) => {
                 const gbyteBalance = balances?.base?.stable ?? 0;
                 const minimumBalance = conf.minAttestorBalanceForStart ?? 1e6;
 
-                logger.info(`Attestor balance(${attestorAddress}):`, gbyteBalance);
+                logger.info(`Attestor balance(${attestorAddress}): ${gbyteBalance / 1e9} GBYTE`);
 
                 if (gbyteBalance < minimumBalance) {
                     throw new Error(`Attestor balance is too low. Please, fund the attestor address. Min balance: ${minimumBalance / 1e9} GBYTE`);
