@@ -1,4 +1,6 @@
 const dag = require('aabot/dag.js');
+const headlessWallet = require('headless-obyte');
+
 const dbService = require('./db');
 const logger = require('./utils/logger');
 
