@@ -17,7 +17,7 @@ module.exports = async (func = () => { }) => {
                 await dbService.initialize();
 
                 const attestorAddress = await headlessWallet.readFirstAddress();
-                const balances = await dag.readBalance([attestorAddress]);
+                const balances = await dag.readBalance(attestorAddress);
                 logger.info(`Attestor balance(${attestorAddress}):`, balances?.base);
 
                 const result = await func();
