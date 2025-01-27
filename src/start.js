@@ -18,7 +18,10 @@ module.exports = async (func = () => { }) => {
                 await dbService.initialize();
 
                 const attestorAddress = await headlessWallet.readFirstAddress();
+                if (!attestorAddress) throw new Error('failed to retrieve attestor address');
+
                 const balances = await dag.readBalance(attestorAddress);
+                if (!balances) throw new Error('failed to retrieve balance information');
 
                 const gbyteBalance = balances?.base?.stable ?? 0;
                 const minimumBalance = conf.minAttestorBalanceForStart ?? 1e6;
