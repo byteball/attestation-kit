@@ -14,6 +14,8 @@ eventBus.on('text', async (from_address, data) => {
     try {
         if (data.trim().startsWith("[Signed message]")) { // User send signed message
             await verifyHandler(from_address, data);
+        } else if (data === "attest") {
+            eventBus.emit('paired', from_address);
         } else if (Validation.isWalletAddress(String(data).trim()) && walletSessionStore.getSession(from_address)) { // User send wallet address
             await walletAddressHandler(from_address, String(data).trim());
         } 
