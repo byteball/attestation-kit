@@ -68,7 +68,7 @@ eventBus.on('paired', async (from_address, data) => {
         }
     } else { // no data
 
-        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', from_address);
+        eventBus.emit('ATTESTATION_KIT_JUST_DEVICE_PAIRED', from_address);
 
         unlock();
     };

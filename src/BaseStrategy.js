@@ -41,9 +41,9 @@ class BaseStrategy {
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
-            if (this.onWalletPairedWithoutData) {
-                this.onWalletPairedWithoutData(from_address);
+        eventBus.on('ATTESTATION_KIT_JUST_DEVICE_PAIRED', async (from_address) => {
+            if (this.onDevicePairedWithoutData) {
+                this.onDevicePairedWithoutData(from_address);
             }
         });
 
@@ -89,7 +89,7 @@ class BaseStrategy {
      * @abstract
      * @param {string} from_address - The address of the paired wallet.
      */
-    onWalletPairedWithoutData(from_address) { }
+    onDevicePairedWithoutData(from_address) { }
 
     /**
      * Must be implemented by derived classes.
