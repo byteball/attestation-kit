@@ -24,52 +24,22 @@ async function postAttestationProfile(userAddress, profile) {
 
     if (!attestorAddress) throw new ErrorWithMessage('Attestor address not available', { code: "INVALID_ATTESTOR" })
 
-    return new Promise((resolve, reject) => {
-        function onError(err) {
-            logger.error('(postAttestationProfile): ' + err);
-            logger.error('(postAttestationProfile) userAddress: ' + userAddress);
-            reject(err);
-        }
-
-        const network = require('ocore/network.js');
-        const composer = require('ocore/composer.js');
-
-        const sanitizedProfile = {
-            ...profile
-        };
-
-        let objMessage = {
-            app: "attestation",
+    const { unit: attestationUnit } = await headlessWallet.sendMultiPayment({
+        messages: [{
+            app: 'attestation',
             payload_location: "inline",
             payload: {
                 address: userAddress,
-                profile: sanitizedProfile
+                profile
             }
-        };
-
-        let params = {
-            paying_addresses: [attestorAddress],
-            outputs: [{ address: attestorAddress, amount: 0 }],
-            messages: [objMessage],
-            signer: headlessWallet.signer,
-            callbacks: composer.getSavingCallbacks({
-                ifNotEnoughFunds: onError,
-                ifError: onError,
-                ifOk: function (objJoint) {
-                    network.broadcastJoint(objJoint);
-
-                    if (!objJoint?.unit?.unit || !Validation.isUnit(objJoint.unit.unit)) {
-                        return onError('Invalid joint structure');
-                    }
-
-                    resolve(objJoint.unit.unit);
-                }
-            })
-        };
-
-
-        composer.composeJoint(params);
+        }]
     });
+
+    if (!attestationUnit) throw new ErrorWithMessage('failed to post attestation profile');
+
+    logger.info(`attestation profile posted for ${userAddress} with unit ${attestationUnit}`);
+
+    return attestationUnit;
 }
 
 
