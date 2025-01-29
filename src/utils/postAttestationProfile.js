@@ -24,10 +24,9 @@ async function postAttestationProfile(userAddress, profile) {
 
     if (!attestorAddress) throw new ErrorWithMessage('Attestor address not available', { code: "INVALID_ATTESTOR" })
 
-
     const { unit: attestationUnit } = await headlessWallet.sendMultiPayment({
-        asset: 'base',
-        base_outputs: [{ address: attestorAddress, amount: 0 }],
+        // asset: 'base',
+        // base_outputs: [{ address: attestorAddress, amount: 0 }],
         messages: [{
             app: 'attestation',
             payload_location: "inline",
