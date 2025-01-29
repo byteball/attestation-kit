@@ -7,8 +7,6 @@ module.exports = async (deviceAddress, dataString) => {
     if (typeof dataString !== 'string') {
         throw new Error('Expected data to be a string');
     }
-    
-    console.error('dataString', dataString);
 
     const arrSignedMessageMatches = dataString.match(/\(signed-message:(.+?)\)/);
 
@@ -36,12 +34,17 @@ module.exports = async (deviceAddress, dataString) => {
             const { signed_message, authors: [{ address: senderWalletAddress }] } = objSignedMessage;
 
             try {
-                console.error('signed_message', signed_message.trim());
+                const messageSplit = signed_message.trim().split(".");
 
-                const signedData = JSON.parse(signed_message.trim());
-                const { message, data } = signedData;
+                const message = messageSplit[0].trim();
+                let data = {};
+                
+                if (messageSplit.length > 1) {
+                    const dataString = messageSplit[1].trim().replace("And I want to attest the following data:", "");
+                    
+                    logger.error('dataString', dataString);
+                }
 
-                logger.error('signedData', signedData, data);
                 let attestationWalletAddress = data?.address;
 
                 if (message && message.includes('I own the address:')) {
