@@ -34,10 +34,20 @@ module.exports = async (deviceAddress, dataString) => {
             const { signed_message, authors: [{ address: senderWalletAddress }] } = objSignedMessage;
 
             try {
-                const signedData = JSON.parse(signed_message.trim());
-                const { message, data } = signedData;
+                const messageSplit = signed_message.trim().split(".");
 
-                logger.error('signedData', signedData, data);
+                const message = messageSplit[0].trim();
+                let data = {};
+                
+                if (messageSplit.length > 1) {
+                    const dataArray = messageSplit[1].trim().replace("And I want to attest the following data:", "").trim().split(", ");
+                    
+                    dataArray.forEach(dataItem => {
+                        const dataItemSplit = dataItem.split(":");
+                        data[dataItemSplit[0].trim()] = dataItemSplit[1].trim();
+                    });
+                }
+
                 let attestationWalletAddress = data?.address;
 
                 if (message && message.includes('I own the address:')) {

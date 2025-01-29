@@ -55,11 +55,17 @@ eventBus.on('paired', async (from_address, data) => {
             return device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ORDER_ALREADY_ATTESTED);
         }
 
-        device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
+        try {
+            device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
 
-        eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
+            eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
+        } catch (error) {
+            logger.error('Error sending message to device:', error);
 
-        unlock();
+            return device.sendMessageToDevice(from_address, 'text', "Unknown error");
+        } finally {
+            unlock();
+        }
     } else { // no data
 
         eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', from_address);
