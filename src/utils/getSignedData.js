@@ -40,9 +40,12 @@ module.exports = async (deviceAddress, dataString) => {
                 let data = {};
                 
                 if (messageSplit.length > 1) {
-                    const dataString = messageSplit[1].trim().replace("And I want to attest the following data:", "");
+                    const dataArray = messageSplit[1].trim().replace("And I want to attest the following data:", "").trim().split(", ");
                     
-                    logger.error('dataString', dataString);
+                    dataArray.forEach(dataItem => {
+                        const dataItemSplit = dataItem.split(":");
+                        data[dataItemSplit[0].trim()] = dataItemSplit[1].trim();
+                    });
                 }
 
                 let attestationWalletAddress = data?.address;
