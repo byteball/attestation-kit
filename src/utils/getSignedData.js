@@ -34,6 +34,8 @@ module.exports = async (deviceAddress, dataString) => {
             const { signed_message, authors: [{ address: senderWalletAddress }] } = objSignedMessage;
 
             try {
+                console.error('signed_message', signed_message.trim());
+
                 const signedData = JSON.parse(signed_message.trim());
                 const { message, data } = signedData;
 
