@@ -65,7 +65,7 @@ class BaseStrategy {
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_VERIFY_WALLET_ADDRESS', async ({ address, device_address }) => {
+        eventBus.on('ATTESTATION_KIT_VERIFIED_WALLET_ADDRESS', async ({ address, device_address }) => {
             if (this.walletAddressVerified) {
                 this.walletAddressVerified(device_address, address);
             }
