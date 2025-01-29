@@ -53,9 +53,9 @@ class BaseStrategy {
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_ADDED_ADDRESS', async (from_address, data) => {
+        eventBus.on('ATTESTATION_KIT_ADDED_ADDRESS', async (device_address, wallet_address) => {
             if (this.onAddressAdded) {
-                this.onAddressAdded(from_address, data);
+                this.onAddressAdded(device_address, wallet_address);
             }
         });
 
@@ -104,7 +104,7 @@ class BaseStrategy {
      * Must be implemented by derived classes.
      * Event handler called when an address is added.
      * @abstract
-     * @param {string} from_address - The address from which the event originated.
+     * @param {string} device_address - The address of the device from which the event originated.
      * @param {string} wallet_address - The wallet address that was added.
      */
     onAddressAdded(device_address, wallet_address) { }
