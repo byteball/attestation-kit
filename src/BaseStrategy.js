@@ -41,9 +41,9 @@ class BaseStrategy {
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_JUST_DEVICE_PAIRED', async (from_address) => {
+        eventBus.on('ATTESTATION_KIT_JUST_DEVICE_PAIRED', async (device_address) => {
             if (this.onDevicePairedWithoutData) {
-                this.onDevicePairedWithoutData(from_address);
+                this.onDevicePairedWithoutData(device_address);
             }
         });
 
@@ -87,9 +87,9 @@ class BaseStrategy {
      * Must be implemented by derived classes.
      * Event handler called when a wallet is paired.
      * @abstract
-     * @param {string} from_address - The address of the paired wallet.
+     * @param {string} device_address - The address of the paired device.
      */
-    onDevicePairedWithoutData(from_address) { }
+    onDevicePairedWithoutData(device_address) { }
 
     /**
      * Must be implemented by derived classes.
