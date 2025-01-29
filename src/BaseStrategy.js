@@ -35,27 +35,27 @@ class BaseStrategy {
         this.init();
 
         // Event listeners
-        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED', async (from_address) => {
-            if (this.onWalletPaired) {
-                this.onWalletPaired(from_address);
+        eventBus.on('ATTESTATION_KIT_DEVICE_PAIRED', async (from_address) => {
+            if (this.onDevicePaired) {
+                this.onDevicePaired(from_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_JUST_WALLET_PAIRED', async (from_address) => {
-            if (this.onWalletPairedWithoutData) {
-                this.onWalletPairedWithoutData(from_address);
+        eventBus.on('ATTESTATION_KIT_JUST_DEVICE_PAIRED', async (device_address) => {
+            if (this.onDevicePairedWithoutData) {
+                this.onDevicePairedWithoutData(device_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', async (device_address, data) => {
-            if (this.onWalletPairedWithData) {
-                this.onWalletPairedWithData(device_address, data);
+        eventBus.on('ATTESTATION_KIT_DEVICE_PAIRED_WITH_DATA', async (device_address, data) => {
+            if (this.onDevicePairedWithData) {
+                this.onDevicePairedWithData(device_address, data);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_ADDED_ADDRESS', async (from_address, data) => {
+        eventBus.on('ATTESTATION_KIT_ADDED_ADDRESS', async (device_address, wallet_address) => {
             if (this.onAddressAdded) {
-                this.onAddressAdded(from_address, data);
+                this.onAddressAdded(device_address, wallet_address);
             }
         });
 
@@ -76,35 +76,35 @@ class BaseStrategy {
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a wallet is paired.
+     * Event handler called when a device is paired.
      * @abstract
-     * @param {string} from_address - The address of the paired wallet.
+     * @param {string} device_address - The address of the paired device.
      * @param {Object} data - Additional data associated with the pairing event.
      */
-    onWalletPaired(from_address, data) { }
+    onDevicePaired(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
      * Event handler called when a wallet is paired.
      * @abstract
-     * @param {string} from_address - The address of the paired wallet.
+     * @param {string} device_address - The address of the paired device.
      */
-    onWalletPairedWithoutData(from_address) { }
+    onDevicePairedWithoutData(device_address) { }
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a wallet is paired with data.
+     * Event handler called when a device is paired with data.
      * @abstract
      * @param {string} device_address - The device address of the paired wallet.
      * @param {Object} data - Additional data associated with the pairing event.
      */
-    onWalletPairedWithData(device_address, data) { }
+    onDevicePairedWithData(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
      * Event handler called when an address is added.
      * @abstract
-     * @param {string} from_address - The address from which the event originated.
+     * @param {string} device_address - The address of the device from which the event originated.
      * @param {string} wallet_address - The wallet address that was added.
      */
     onAddressAdded(device_address, wallet_address) { }

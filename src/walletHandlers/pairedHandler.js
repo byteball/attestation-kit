@@ -16,7 +16,7 @@ eventBus.on('paired', async (from_address, data) => {
     const unlock = await mutex.lock(from_address);
 
     walletSessionStore.createSession(from_address); // Create a session for the paired wallet
-    eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED', from_address);
+    eventBus.emit('ATTESTATION_KIT_DEVICE_PAIRED', from_address);
 
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 1) { // data is in the format: address-data
         const [address, dataString] = data.split('-');
@@ -58,7 +58,7 @@ eventBus.on('paired', async (from_address, data) => {
         try {
             device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
 
-            eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
+            eventBus.emit('ATTESTATION_KIT_DEVICE_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
         } catch (error) {
             logger.error('Error sending message to device:', error);
 
@@ -68,7 +68,7 @@ eventBus.on('paired', async (from_address, data) => {
         }
     } else { // no data
 
-        eventBus.emit('ATTESTATION_KIT_JUST_WALLET_PAIRED', from_address);
+        eventBus.emit('ATTESTATION_KIT_JUST_DEVICE_PAIRED', from_address);
 
         unlock();
     };
