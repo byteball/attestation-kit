@@ -7,6 +7,8 @@ module.exports = async (deviceAddress, dataString) => {
     if (typeof dataString !== 'string') {
         throw new Error('Expected data to be a string');
     }
+    
+    console.error('dataString', dataString);
 
     const arrSignedMessageMatches = dataString.match(/\(signed-message:(.+?)\)/);
 
