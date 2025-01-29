@@ -58,7 +58,7 @@ eventBus.on('paired', async (from_address, data) => {
         try {
             device.sendMessageToDevice(from_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
 
-            eventBus.emit('ATTESTATION_KIT_WALLET_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
+            eventBus.emit('ATTESTATION_KIT_DEVICE_PAIRED_WITH_DATA', { device_address: from_address, data: dataObject });
         } catch (error) {
             logger.error('Error sending message to device:', error);
 
