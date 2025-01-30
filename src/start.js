@@ -23,7 +23,7 @@ module.exports = async (func = () => { }) => {
                 const balances = await dag.readBalance(attestorAddress);
                 if (!balances) throw new Error('failed to retrieve balance information');
 
-                const gbyteBalance = balances?.base?.stable ?? 0;
+                const gbyteBalance = balances?.base?.total ?? 0;
                 const minimumBalance = conf.minAttestorBalanceForStart ?? 1e6;
 
                 logger.info(`Attestor balance(${attestorAddress}): ${gbyteBalance / 1e9} GBYTE`);
