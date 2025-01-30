@@ -1,12 +1,14 @@
 const storage = require('node-persist');
 const { customAlphabet } = require('nanoid');
+const ignore = require("ignore");
 
 const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const SESSIONS_FOLDER_NAME = ".sessions";
 
 class SessionStore {
     constructor() {
         storage.init({
-            dir: './.sessions',
+            dir: './' + SESSIONS_FOLDER_NAME,
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
@@ -16,6 +18,8 @@ class SessionStore {
             interval: false,
             ttl: false // lifetime
         });
+
+        ignore().add(SESSIONS_FOLDER_NAME);
     }
 
     async createSession(deviceAddress, replace = false) {
