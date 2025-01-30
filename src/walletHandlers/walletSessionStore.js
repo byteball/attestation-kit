@@ -6,7 +6,7 @@ const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 class SessionStore {
     constructor() {
         storage.init({
-            dir: './sessions',
+            dir: './.sessions',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
