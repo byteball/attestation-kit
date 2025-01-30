@@ -1,88 +1,74 @@
-const logger = require('../utils/logger');
+const storage = require('node-persist');
 const { customAlphabet } = require('nanoid');
 
 const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 class SessionStore {
     constructor() {
-        this.sessions = new Map();
-
-        // {
-        //     "device_address": {
-        //         "wallet": "0x1234",
-        //         "ts": 123456,
-        //         "id": gdsgsdx,
-        //     },
-        // }
+        // Инициализация хранилища
+        storage.initSync({
+            dir: './sessions', // Директория для хранения файлов сессий
+            stringify: JSON.stringify,
+            parse: JSON.parse,
+            encoding: 'utf8',
+            logging: false,
+            continuous: true,
+            interval: false,
+            ttl: false // lifetime
+        });
     }
 
-    createSession(deviceAddress, replace = false) {
-        const session = this.sessions.get(deviceAddress);
+    async createSession(deviceAddress, replace = false) {
+        const session = await storage.getItem(deviceAddress);
 
-        if (this.sessions.has(deviceAddress) && !replace) {
+        if (session && !replace) {
             return session;
         } else {
             const id = customAlphabet(ALPHABET, 5)();
+            const value = {
+                id: id,
+                ts: new Date().getTime(),
+            };
 
-            const value = new Map([
-                ["id", id],
-                ["ts", new Date().getTime()],
-            ]);
-
-
-            return this.sessions.set(deviceAddress, value);
+            await storage.setItem(deviceAddress, value);
+            return value;
         }
     }
 
-    setSessionWalletAddress(deviceAddress, value) {
-        if (this.sessions.has(deviceAddress)) {
-            const session = this.sessions.get(deviceAddress);
-            session.set('address', value);
+    async setSessionWalletAddress(deviceAddress, walletAddress) {
+        const session = await storage.getItem(deviceAddress);
+        if (session) {
+            session.wallet = walletAddress;
+            await storage.setItem(deviceAddress, session);
         } else {
-            logger.error(`Session not found for device address: ${deviceAddress}`);
+            console.error(`Session not found for device address: ${deviceAddress}`);
         }
     }
 
-    deleteSessionWalletAddress(deviceAddress) {
-        if (this.sessions.has(deviceAddress)) {
-            const session = this.sessions.get(deviceAddress);
-            session.delete('address');
+    async deleteSessionWalletAddress(deviceAddress) {
+        const session = await storage.getItem(deviceAddress);
+        if (session) {
+            delete session.wallet;
+            await storage.setItem(deviceAddress, session);
         } else {
-            logger.error(`Session not found for device address: ${deviceAddress}`);
+            console.error(`Session not found for device address: ${deviceAddress}`);
         }
     }
 
-    getSessionWalletAddress(deviceAddress) {
-        if (this.sessions.has(deviceAddress)) {
-            const session = this.sessions.get(deviceAddress);
-
-            return session.get('address');
-        } else {
-            return null;
-        }
+    async getSessionWalletAddress(deviceAddress) {
+        const session = await storage.getItem(deviceAddress);
+        return session ? session.wallet : null;
     }
 
-    getSession(deviceAddress) {
-
-        if (this.sessions.has(deviceAddress)) {
-            return this.sessions.get(deviceAddress);
-        } else {
-            return null;
-        }
+    async getSession(deviceAddress) {
+        return await storage.getItem(deviceAddress);
     }
 
-    deleteSession(deviceAddress) {
-        this.sessions.delete(deviceAddress);
+    async deleteSession(deviceAddress) {
+        await storage.removeItem(deviceAddress);
     }
 }
 
 const sessionStore = new SessionStore();
-
-// Run cleanup every hour
-setInterval(() => {
-    // sessionStore.cleanup();
-    // TODO: Implement cleanup
-}, 60 * 60 * 1000);
-
 
 module.exports = sessionStore;
