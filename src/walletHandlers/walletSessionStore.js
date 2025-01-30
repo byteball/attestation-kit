@@ -5,13 +5,13 @@ const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 class SessionStore {
     constructor() {
-        // Инициализация хранилища
-        storage.initSync({
-            dir: './sessions', // Директория для хранения файлов сессий
+        storage.init({
+            dir: './sessions',
             stringify: JSON.stringify,
             parse: JSON.parse,
             encoding: 'utf8',
             logging: false,
+            writeQueue: true,
             continuous: true,
             interval: false,
             ttl: false // lifetime
