@@ -11,7 +11,7 @@ const walletSessionStore = require('./walletSessionStore');
 
 module.exports = async (device_address, data) => {
     await walletSessionStore.createSession(device_address); // Create a session for the device
-    eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED', device_address);
+    eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED', device_address);
 
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 1) { // data is in the format: address-data
         const [address, dataString] = data.split('-');
@@ -49,13 +49,13 @@ module.exports = async (device_address, data) => {
         try {
             device.sendMessageToDevice(device_address, 'text', dictionary.wallet.ASK_VERIFY_FN(address, dataObject));
 
-            eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITH_DATA', { device_address, data: dataObject });
+            eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED_WITH_DATA', { device_address, data: dataObject });
         } catch (error) {
             logger.error('Error sending message to device:', error);
 
             return device.sendMessageToDevice(device_address, 'text', "Unknown error");
         }
     } else { // no data provided
-        eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITHOUT_DATA', device_address);
+        eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED_WITHOUT_DATA', device_address);
     };
 }

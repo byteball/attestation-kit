@@ -34,21 +34,21 @@ class BaseStrategy {
         this.init();
 
         // Event listeners
-        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED', async (device_address) => {
-            if (this.onAttestationProcessStarted) {
-                this.onAttestationProcessStarted(device_address);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED', async (device_address) => {
+            if (this.onAttestationProcessRequested) {
+                this.onAttestationProcessRequested(device_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITHOUT_DATA', async (device_address) => {
-            if (this.onAttestationProcessStartedWithoutData) {
-                this.onAttestationProcessStartedWithoutData(device_address);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED_WITHOUT_DATA', async (device_address) => {
+            if (this.onAttestationProcessRequestedWithoutData) {
+                this.onAttestationProcessRequestedWithoutData(device_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITH_DATA', async (device_address, data) => {
-            if (this.onAttestationProcessStartedWithData) {
-                this.onAttestationProcessStartedWithData(device_address, data);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED_WITH_DATA', async (device_address, data) => {
+            if (this.onAttestationProcessRequestedWithData) {
+                this.onAttestationProcessRequestedWithData(device_address, data);
             }
         });
 
@@ -80,7 +80,7 @@ class BaseStrategy {
      * @param {string} device_address - The address of the device that started the attestation process.
      * @param {Object} data - Additional data associated with the attestation process.
      */
-    onAttestationProcessStarted(device_address, data) { }
+    onAttestationProcessRequested(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
@@ -88,7 +88,7 @@ class BaseStrategy {
      * @abstract
      * @param {string} device_address - The address of the device that started the attestation process.
      */
-    onAttestationProcessStartedWithoutData(device_address) { }
+    onAttestationProcessRequestedWithoutData(device_address) { }
 
     /**
      * Must be implemented by derived classes.
@@ -97,7 +97,7 @@ class BaseStrategy {
      * @param {string} device_address - The device address that started the attestation process.
      * @param {Object} data - Additional data associated with the attestation process.
      */
-    onAttestationProcessStartedWithData(device_address, data) { }
+    onAttestationProcessRequestedWithData(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
