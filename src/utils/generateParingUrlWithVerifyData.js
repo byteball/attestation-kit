@@ -10,8 +10,7 @@ const Validation = require('./Validation');
  * @param {Object} data - Key-value pairs of user data to be verified (e.g. {username: "john", user_id: "123"})
  * @returns {string} The pairing URL in format: obyte[-tn]:<pubkey>@<hub>#<address>-<userid>-<username>
  * @example
- * generateParingUrlWithVerifyData("github", "ADDR123", {username: "john"})
- * // returns: obyte:PUBKEY@hub#github-ADDR123-username=john
+ * generateParingUrlWithVerifyData("ADDR123", {username: "john"})
  * @throws {ErrorWithMessage} Throws an error if any validation fails.
  */
 

@@ -3,6 +3,7 @@ module.exports = {
     ErrorWithMessage: require('./ErrorWithMessage'),
     generateParingUrlWithVerifyData: require('./generateParingUrlWithVerifyData'),
     generateParingBackUrl: require('./generateParingBackUrl'),
+    generateParingUrl: require('./generateParingUrl'),
     logger: require('./logger'),
     postAttestationProfile: require('./postAttestationProfile'),
     toUpperCaseFirstLetter: require('./toUpperCaseFirstLetter'),
