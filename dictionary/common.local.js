@@ -7,6 +7,6 @@ module.exports = {
     REMOVE_ADDRESS_ALREADY_ATTESTED: 'You can\'t remove your wallet address because it has been attested.',
     REMOVE_ADDRESS_NOT_FOUND: 'You can\'t remove your wallet address because it has not been found.',
     CANNOT_FIND_ORDER: 'We cannot find your order. Check your wallet address; Probably we removed your wallet address.',
-    ALREADY_ATTESTED: `Attestation already exists.\n\nIf you want to re-attest with another wallet address, please use /attest command again.`,
+    ALREADY_ATTESTED: `Attestation already exists.\n\nIf you want to re-attest with another wallet address, please use attest command in your wallet.`,
     UNKNOWN_COMMAND: 'Unknown command. Please try again.',
 }
