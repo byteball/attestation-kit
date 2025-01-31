@@ -1,6 +1,5 @@
 const escape = require('lodash/escape');
 const eventBus = require('ocore/event_bus.js');
-const device = require('ocore/device');
 
 const walletSessionStore = require('./walletHandlers/walletSessionStore');
 const { ErrorWithMessage } = require('../src/utils/ErrorWithMessage');
