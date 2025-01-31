@@ -1,5 +1,4 @@
 module.exports = {
-    WELCOME: 'Welcome to OAS (Obyte Attestation Service)',
     ADDRESS_RECEIVED: 'Thank you! Your wallet address has been received.',
     HAVE_TO_VERIFY: 'You have to verify your wallet address.',
     INVALID_WALLET_ADDRESS: 'Invalid wallet address. Please enter a 32-character address containing uppercase letters and numbers.',

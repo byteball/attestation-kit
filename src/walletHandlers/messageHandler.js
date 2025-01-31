@@ -16,9 +16,9 @@ eventBus.on('text', async (from_address, data) => {
             await verifyHandler(from_address, data);
         } else if (data === "attest") {
             eventBus.emit('paired', from_address);
-        } else if (Validation.isWalletAddress(String(data).trim()) && walletSessionStore.getSession(from_address)) { // User send wallet address
+        } else if (Validation.isWalletAddress(String(data).trim()) && await walletSessionStore.getSession(from_address)) { // User send wallet address
             await walletAddressHandler(from_address, String(data).trim());
-        } 
+        }
     } finally {
         return unlock();
     }
