@@ -75,26 +75,26 @@ class BaseStrategy {
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a new attestation process is started.
+     * Event handler called when a new attestation process is requested.
      * @abstract
-     * @param {string} device_address - The address of the device that started the attestation process.
+     * @param {string} device_address - The address of the device that requested the attestation process.
      * @param {Object} data - Additional data associated with the attestation process.
      */
     onAttestationProcessRequested(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a wallet attestation process is started without additional data.
+     * Event handler called when a wallet attestation process is requested without additional data.
      * @abstract
-     * @param {string} device_address - The address of the device that started the attestation process.
+     * @param {string} device_address - The address of the device that requested the attestation process.
      */
     onAttestationProcessRequestedWithoutData(device_address) { }
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a new attestation process is started with additional data.
+     * Event handler called when a new attestation process is requested with additional data.
      * @abstract
-     * @param {string} device_address - The device address that started the attestation process.
+     * @param {string} device_address - The device address that requested the attestation process.
      * @param {Object} data - Additional data associated with the attestation process.
      */
     onAttestationProcessRequestedWithData(device_address, data) { }
