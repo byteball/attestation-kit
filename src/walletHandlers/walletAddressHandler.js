@@ -17,6 +17,6 @@ module.exports = async (device_address, data) => {
         await walletSessionStore.setSessionWalletAddress(device_address, wallet_address);
         eventBus.emit('ATTESTATION_KIT_ADDED_ADDRESS', device_address, wallet_address);
     } else {
-        return device.sendMessageToDevice(from_address, 'text', dictionary.common.INVALID_WALLET_ADDRESS);
+        return device.sendMessageToDevice(device_address, 'text', dictionary.common.INVALID_WALLET_ADDRESS);
     }
 };
