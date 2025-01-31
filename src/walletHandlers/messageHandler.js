@@ -7,19 +7,20 @@ const verifyHandler = require("./verifyHandler");
 const walletAddressHandler = require('./walletAddressHandler');
 const walletSessionStore = require('./walletSessionStore');
 
-eventBus.on('text', async (from_address, data) => {
-    const unlock = await mutex.lock(from_address);
+eventBus.on('text', async (device_address, data) => {
+    const unlock = await mutex.lock(device_address);
+    const session = await walletSessionStore.getSession(device_address)
 
     try {
         if (data.trim().startsWith("[Signed message]")) { // User send signed message
-            await verifyHandler(from_address, data);
+            await verifyHandler(device_address, data);
         } else if (data === "attest") {
-            eventBus.emit('paired', from_address);
-        } else if (await walletSessionStore.getSession(from_address)) { // User send wallet address
-            await walletAddressHandler(from_address, String(data).trim());
+            eventBus.emit('paired', device_address);
+        } else if (session) {
+            await walletAddressHandler(device_address, String(data).trim());
         } else {
-            device.sendMessageToDevice(from_address, 'text', dictionary.common.UNKNOWN_COMMAND);
-            return device.sendMessageToDevice(from_address, 'text', `Please use [attest](command:attest) to start the attestation process.`);
+            device.sendMessageToDevice(device_address, 'text', dictionary.common.UNKNOWN_COMMAND);
+            return device.sendMessageToDevice(device_address, 'text', `Please use [attest](command:attest) to start the attestation process.`);
         }
     } finally {
         return unlock();
