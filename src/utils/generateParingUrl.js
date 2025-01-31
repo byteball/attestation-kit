@@ -12,5 +12,5 @@ const device = require('ocore/device');
 module.exports = () => {
     const publicKey = device.getMyDevicePubKey();
 
-    return `obyte${conf.testnet ? '-tn' : ''}:${publicKey}@${conf.hub}#`;
+    return `obyte${conf.testnet ? '-tn' : ''}:${publicKey}@${conf.hub}#0000`;
 }
