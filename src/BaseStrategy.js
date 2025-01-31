@@ -35,21 +35,21 @@ class BaseStrategy {
         this.init();
 
         // Event listeners
-        eventBus.on('ATTESTATION_KIT_DEVICE_PAIRED', async (from_address) => {
-            if (this.onDevicePaired) {
-                this.onDevicePaired(from_address);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED', async (device_address) => {
+            if (this.onAttestationProcessStarted) {
+                this.onAttestationProcessStarted(device_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_JUST_DEVICE_PAIRED', async (device_address) => {
-            if (this.onDevicePairedWithoutData) {
-                this.onDevicePairedWithoutData(device_address);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITHOUT_DATA', async (device_address) => {
+            if (this.onAttestationProcessStartedWithoutData) {
+                this.onAttestationProcessStartedWithoutData(device_address);
             }
         });
 
-        eventBus.on('ATTESTATION_KIT_DEVICE_PAIRED_WITH_DATA', async (device_address, data) => {
-            if (this.onDevicePairedWithData) {
-                this.onDevicePairedWithData(device_address, data);
+        eventBus.on('ATTESTATION_KIT_ATTESTATION_PROCESS_STARTED_WITH_DATA', async (device_address, data) => {
+            if (this.onAttestationProcessStartedWithData) {
+                this.onAttestationProcessStartedWithData(device_address, data);
             }
         });
 
@@ -76,29 +76,29 @@ class BaseStrategy {
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a device is paired.
+     * Event handler called when a new attestation process is started.
      * @abstract
-     * @param {string} device_address - The address of the paired device.
-     * @param {Object} data - Additional data associated with the pairing event.
+     * @param {string} device_address - The address of the device that started the attestation process.
+     * @param {Object} data - Additional data associated with the attestation process.
      */
-    onDevicePaired(device_address, data) { }
+    onAttestationProcessStarted(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a wallet is paired.
+     * Event handler called when a wallet attestation process is started without additional data.
      * @abstract
-     * @param {string} device_address - The address of the paired device.
+     * @param {string} device_address - The address of the device that started the attestation process.
      */
-    onDevicePairedWithoutData(device_address) { }
+    onAttestationProcessStartedWithoutData(device_address) { }
 
     /**
      * Must be implemented by derived classes.
-     * Event handler called when a device is paired with data.
+     * Event handler called when a new attestation process is started with additional data.
      * @abstract
-     * @param {string} device_address - The device address of the paired wallet.
-     * @param {Object} data - Additional data associated with the pairing event.
+     * @param {string} device_address - The device address that started the attestation process.
+     * @param {Object} data - Additional data associated with the attestation process.
      */
-    onDevicePairedWithData(device_address, data) { }
+    onAttestationProcessStartedWithData(device_address, data) { }
 
     /**
      * Must be implemented by derived classes.
