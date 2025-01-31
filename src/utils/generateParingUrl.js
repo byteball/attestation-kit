@@ -5,7 +5,7 @@ const device = require('ocore/device');
  * Generates a bot pairing URL.
  * @returns {string} The pairing URL in format: obyte[-tn]:<pubkey>@<hub>#
  * @example
- * const botPairingUrl = generateParingUrlWithVerifyData();
+ * const botPairingUrl = generateParingUrl();
  * @throws {ErrorWithMessage} Throws an error if any validation fails.
  */
 
