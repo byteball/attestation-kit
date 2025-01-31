@@ -6,7 +6,7 @@ const verifyHandler = require("./verifyHandler");
 
 const walletAddressHandler = require('./walletAddressHandler');
 const walletSessionStore = require('./walletSessionStore');
-const attestationEntryHandler = require('./attestationEntryHandler');
+const attestationStartHandler = require('./attestationStartHandler');
 
 eventBus.on('text', async (device_address, data) => {
     const unlock = await mutex.lock(device_address);
@@ -16,7 +16,7 @@ eventBus.on('text', async (device_address, data) => {
         if (data.trim().startsWith("[Signed message]")) { // User send signed message
             await verifyHandler(device_address, data);
         } else if (data === "attest") {
-            await attestationEntryHandler(device_address);
+            await attestationStartHandler(device_address);
         } else if (session) {
             await walletAddressHandler(device_address, String(data).trim());
         } else {
