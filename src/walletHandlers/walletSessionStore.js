@@ -25,7 +25,7 @@ class SessionStore {
         if (session && !replace) {
             return session;
         } else {
-            const id = customAlphabet(ALPHABET, 5)();
+            const id = customAlphabet(ALPHABET, 10)();
             const value = {
                 id: id,
                 ts: new Date().getTime(),
