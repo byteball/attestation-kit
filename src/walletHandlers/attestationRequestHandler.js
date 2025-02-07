@@ -10,8 +10,8 @@ const DbService = require('../db/DbService');
 const walletSessionStore = require('./walletSessionStore');
 
 module.exports = async (device_address, data) => {
-    await walletSessionStore.createSession(device_address); // Create a session for the device
     eventBus.emit('ATTESTATION_KIT_ATTESTATION_PROCESS_REQUESTED', device_address);
+    await walletSessionStore.createSession(device_address); // Create a session for the device
 
     if (typeof data === 'string' && (data.match(/-/g) || []).length === 1) { // data is in the format: address-data
         const [address, dataString] = data.split('-');
