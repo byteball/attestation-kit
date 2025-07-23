@@ -22,6 +22,13 @@ async function postAttestationProfile(userAddress, profile) {
         throw new ErrorWithMessage('Invalid data object', { code: "INVALID_DATA" });
     }
 
+    // replace numbers with strings so that they get into the attested_fields table
+    let attestedProfile = {};
+    for (let name in profile) {
+        const value = profile[name];
+        attestedProfile[name] = typeof value === 'number' ? (value + '') : value;
+    }
+
     if (!attestorAddress) throw new ErrorWithMessage('Attestor address not available', { code: "INVALID_ATTESTOR" })
 
     const { unit: attestationUnit } = await headlessWallet.sendMultiPayment({
@@ -30,7 +37,7 @@ async function postAttestationProfile(userAddress, profile) {
             payload_location: "inline",
             payload: {
                 address: userAddress,
-                profile
+                profile: attestedProfile,
             }
         }]
     });
